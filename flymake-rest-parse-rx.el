@@ -6,7 +6,7 @@
 
 ;;; Code:
 
-(defconst flymake-rest-rx-constituents
+(defconst flymake-rest-parse-rx-constituents
   `((file-name ,(lambda (body)
                   (rx-to-string
                    `(group-n 1 ,@(or (cdr body)
@@ -54,7 +54,7 @@ TODO: describe arguments.
                                (intern (concat ":" (symbol-name severity))))))
 
   (let ((combined-regex
-         (let ((rx-constituents (append flymake-rest-rx-constituents
+         (let ((rx-constituents (append flymake-rest-parse-rx-constituents
                                         rx-constituents nil)))
            (rx-to-string `(or ,@(mapcar #'car regexps))
                          'no-group)))
@@ -112,4 +112,4 @@ TODO: describe arguments.
                          message)))))))))
        res)))
 
-(provide 'flymake-rest-rx)
+(provide 'flymake-rest-parse-rx)

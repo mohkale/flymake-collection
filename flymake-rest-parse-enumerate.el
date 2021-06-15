@@ -28,4 +28,4 @@ The value of the current entry from GEN in BODY will be set to the variable
            (setq res ,@body))
          res))))
 
-(provide 'flymake-rest-enumerate)
+(provide 'flymake-rest-parse-enumerate)

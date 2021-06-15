@@ -6,7 +6,7 @@
 (require 'flymake-rest-define)
 
 (eval-when-compile
-  (require 'flymake-rest-rx))
+  (require 'flymake-rest-parse-rx))
 
 (defcustom flymake-rest-gcc-args
   '("-pedantic" "-pedantic-errors")

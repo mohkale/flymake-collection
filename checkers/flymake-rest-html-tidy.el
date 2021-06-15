@@ -6,7 +6,7 @@
 (require 'flymake-rest-define)
 
 (eval-when-compile
-  (require 'flymake-rest-rx))
+  (require 'flymake-rest-parse-rx))
 
 ;;;###autoload (autoload 'flymake-rest-html-tidy "flymake-rest-html-tidy")
 (flymake-rest-define flymake-rest-html-tidy

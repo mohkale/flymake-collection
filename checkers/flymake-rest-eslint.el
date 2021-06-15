@@ -6,7 +6,7 @@
 (require 'flymake-rest-define)
 
 (eval-when-compile
-  (require 'flymake-rest-enumerate))
+  (require 'flymake-rest-parse-enumerate))
 
 ;;;###autoload (autoload 'flymake-rest-eslint "flymake-rest-eslint")
 (flymake-rest-define flymake-rest-eslint

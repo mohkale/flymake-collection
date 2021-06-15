@@ -6,7 +6,7 @@
 (require 'flymake-rest-define)
 
 (eval-when-compile
-  (require 'flymake-rest-rx))
+  (require 'flymake-rest-parse-rx))
 
 ;;;###autoload (autoload 'flymake-rest-mypy "flymake-rest-mypy")
 (flymake-rest-define flymake-rest-mypy
