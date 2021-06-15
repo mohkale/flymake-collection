@@ -1,9 +1,8 @@
 ;;; flymake-rest-use-package.el --- use-package extensions for flymake-rest -*- lexical-binding: t -*-
 
-(require 'flymake-rest)
-(require 'flymake-rest-hook)
-
 (require 'use-package-core)
+
+(defvar flymake-rest-config) ;; In [[file:flymake-rest-hook.el][flymake-rest-hook.el]].
 
 ;; Add to use-package-keywords, just after :custom.
 (unless (member :flymake-hook use-package-keywords)
