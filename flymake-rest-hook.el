@@ -51,8 +51,4 @@ from `flymake-rest-config' to `flymake-diagnostic-functions'."
   "Tear down flymake-hook."
   (remove-hook 'after-change-major-mode-hook #'flymake-rest-hook-set-backends))
 
-;;;###autoload
-(with-eval-after-load 'use-package
-  (require 'flymake-rest-hook-use-package))
-
 (provide 'flymake-rest-hook)
