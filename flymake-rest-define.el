@@ -206,24 +206,4 @@ diagnostics to parse this form should evaluate to nil."
                    (process-send-eof proc)))
              ,proc-symb))))))
 
-(defun flymake-rest-parse-json (output)
-  "Helper for `flymake-rest-define' to parse JSON output OUTPUT.
-
-Adapted from `flycheck-parse-json'. This reads a bunch of JSON-Lines
-like output from OUTPUT into a list and then returns it."
-  (let (objects
-        (json-array-type 'list)
-        (json-false nil))
-    (with-temp-buffer
-      (insert output)
-      (goto-char (point-min))
-      (while (not (eobp))
-        (when (memq (char-after) '(?\{ ?\[))
-          (push (json-parse-buffer
-                 :object-type 'alist :array-type 'list
-                 :null-object nil :false-object nil)
-                objects))
-        (forward-line)))
-    objects))
-
 (provide 'flymake-rest-define)

@@ -3,9 +3,10 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest-define)
+(require 'flymake-rest)
 
 (eval-when-compile
+  (require 'flymake-rest-define)
   (require 'flymake-rest-parse-rx))
 
 ;;;###autoload (autoload 'flymake-rest-awk-gawk "flymake-rest-awk-gawk")
