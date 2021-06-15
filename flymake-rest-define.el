@@ -1,13 +1,32 @@
 ;;; flymake-rest-define.el --- A macro to simplify checker creation -*- lexical-binding: t -*-
 
+;; Copyright (c) 2021 Mohsin Kaleem
+
+;; Permission is hereby granted, free of charge, to any person obtaining a copy
+;; of this software and associated documentation files (the "Software"), to deal
+;; in the Software without restriction, including without limitation the rights
+;; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+;; copies of the Software, and to permit persons to whom the Software is
+;; furnished to do so, subject to the following conditions:
+
+;; The above copyright notice and this permission notice shall be included in all
+;; copies or substantial portions of the Software.
+
+;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+;; SOFTWARE.
+
 ;;; Commentary:
 
-;; This file provides a macro, adapted heavily from [[https://github.com/karlotness/flymake-quickdef/blob/150c5839768a3d32f988f9dc08052978a68f2ad7/flymake-quickdef.el][flymake-quickdef]],
-;;
-;; A shallow fork of [[https://github.com/karlotness/flymake-quickdef][flymake-quickdef]] supporting more flycheck like features.
-;; TODO: Finish
-
-;; TODO: license
+;; This file provides a macro, adapted heavily from [[https://github.com/karlotness/flymake-quickdef/blob/150c5839768a3d32f988f9dc08052978a68f2ad7/flymake-quickdef.el][flymake-quickdef]], to allow
+;; streamlined syntax-checker definitions. The intended purpose is to abstract
+;; the process creation, management and cleanup for a checker as much as possible,
+;; leaving the developer to only have to specify what command to run and how
+;; to parse its output.
 
 ;;; Code:
 
@@ -26,7 +45,16 @@ in DEFS is :command and :error-parser.
 
 Available Variables
 
-fmqd-source, fmqd-temp-file, fmdq-temp-dir, fmqd-context. TODO: Document.
+fmqd-source, fmqd-temp-file, fmdq-temp-dir, fmqd-context.
+Within the body of :error-parser and :command, several macro specific variables
+are made available. This includes (1) fmqd-source, (2) fmqd-temp-file,
+(3) fmqd-temp-dir, (4) fmqd-context.
+
+1: The source buffer that's being checked by the checker.
+2: The path to the temporary file that was created when using :write-type file.
+3: The dirname of fmqd-temp-file when using :write-type file.
+4: A general purpose list variable that can be used however the developer sees
+   fit. This is useful for example in `flymake-rest-parse-enumerate'.
 
 Body Definitions
 

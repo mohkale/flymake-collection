@@ -38,10 +38,7 @@
 ;; to specify the precedence and preferred order of them and the means
 ;; to easily configure flymake linting.
 ;;
-;; For more see [[file:README.org][README.org]].
-
-;; Please see https://github.com/mohkale/flymake-rest for more
-;; information.
+;; For more see [[file:README.org][README.org]] or https://github.com/mohkale/flymake-rest.
 
 ;;; Code:
 
