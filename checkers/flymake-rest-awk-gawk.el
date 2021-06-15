@@ -8,7 +8,8 @@
 (eval-when-compile
   (require 'flymake-rest-rx))
 
-(flymake-backend! flymake-rest-awk-gawk
+;;;###autoload (autoload 'flymake-rest-awk-gawk "flymake-rest-awk-gawk")
+(flymake-rest-define flymake-rest-awk-gawk
   "GNU awk's built-in --lint checker."
   :title "gawk-awk"
   :pre-let ((gawk-exec (executable-find "gawk")))

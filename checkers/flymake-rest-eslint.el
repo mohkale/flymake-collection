@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-enumerate))
 
+;;;###autoload (autoload 'flymake-rest-eslint "flymake-rest-eslint")
 (flymake-rest-define flymake-rest-eslint
   "A Javascript syntax and style checker using eslint.
 
@@ -28,7 +29,7 @@ See URL `https://eslint.org/'."
       (alist-get
        'messages
        (caar
-        (flymake-backend-parse-json!
+        (flymake-rest-parse-json
          (buffer-substring-no-properties
           (point-min) (point-max)))))
     (let-alist it

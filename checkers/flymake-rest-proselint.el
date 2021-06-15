@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-enumerate))
 
+;;;###autoload (autoload 'flymake-rest-proselint "flymake-rest-proselint")
 (flymake-rest-define flymake-rest-proselint
   "Flymake checker using Proselint.
 
@@ -23,7 +24,7 @@ See URL `http://proselint.com/'."
       (alist-get 'errors
        (alist-get 'data
         (car
-         (flymake-backend-parse-json!
+         (flymake-rest-parse-json
           (buffer-substring-no-properties
            (point-min) (point-max))))))
     (let-alist it

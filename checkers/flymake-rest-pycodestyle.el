@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-rx))
 
+;;;###autoload (autoload 'flymake-rest-pycodestyle "flymake-rest-pycodestyle")
 (flymake-rest-define flymake-rest-pycodestyle
   :title "pycodestyle"
   :pre-let ((pycodestyle-exec (executable-find "pycodestyle")))

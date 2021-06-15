@@ -12,6 +12,7 @@
   "Path to the style config for markdownlint."
   :type 'string)
 
+;;;###autoload (autoload 'flymake-rest-markdownlint "flymake-rest-markdownlint")
 (flymake-rest-define flymake-rest-markdownlint
   "Markdown checker using mdl.
 

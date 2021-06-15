@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-rx))
 
+;;;###autoload (autoload 'flymake-rest-yamllint "flymake-rest-yamllint")
 (flymake-rest-define flymake-rest-yamllint
   "A YAML syntax checker using YAMLLint.
 See URL `https://github.com/adrienverge/yamllint'."

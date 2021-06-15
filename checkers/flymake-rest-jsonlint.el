@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-rx))
 
+;;;###autoload (autoload 'flymake-rest-jsonlint "flymake-rest-jsonlint")
 (flymake-rest-define flymake-rest-jsonlint
   "A JSON syntax and style checker using jsonlint.
 

@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-rx))
 
+;;;###autoload (autoload 'flymake-rest-jq "flymake-rest-jq")
 (flymake-rest-define flymake-rest-jq
   "JSON checker using the jq tool.
 

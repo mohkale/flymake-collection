@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-enumerate))
 
+;;;###autoload (autoload 'flymake-rest-shellcheck "flymake-rest-shellcheck")
 (flymake-rest-define flymake-rest-shellcheck
   "A shell script syntax and style checker using Shellcheck.
 
@@ -26,7 +27,7 @@ See URL `https://github.com/koalaman/shellcheck/'."
   :error-parser
   (flymake-rest-parse-enumerate
       (car
-       (flymake-backend-parse-json!
+       (flymake-rest-parse-json
         (buffer-substring-no-properties
          (point-min) (point-max))))
     (let-alist it

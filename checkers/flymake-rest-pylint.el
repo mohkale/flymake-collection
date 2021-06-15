@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-enumerate))
 
+;;;###autoload (autoload 'flymake-rest-pylint "flymake-rest-pylint")
 (flymake-rest-define flymake-rest-pylint
   :title "pylint"
   :pre-let ((python-exec (executable-find "python3"))

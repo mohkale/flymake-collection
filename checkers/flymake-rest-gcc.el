@@ -15,6 +15,7 @@
 (defcustom flymake-rest-gcc-include-path nil
   "Default include path for gcc in `flymake-rest-gcc'.")
 
+;;;###autoload (autoload 'flymake-rest-gcc "flymake-rest-gcc")
 (flymake-rest-define flymake-rest-gcc
   "A C/C++ syntax checker using GCC.
 

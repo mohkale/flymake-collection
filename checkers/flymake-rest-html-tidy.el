@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-rx))
 
+;;;###autoload (autoload 'flymake-rest-html-tidy "flymake-rest-html-tidy")
 (flymake-rest-define flymake-rest-html-tidy
   "A HTML syntax and style checker using Tidy.
 

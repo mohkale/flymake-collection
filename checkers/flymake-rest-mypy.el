@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-rx))
 
+;;;###autoload (autoload 'flymake-rest-mypy "flymake-rest-mypy")
 (flymake-rest-define flymake-rest-mypy
   "Mypy syntax and type checker.  Requires mypy>=0.580.
 

@@ -8,6 +8,7 @@
 (eval-when-compile
   (require 'flymake-rest-rx))
 
+;;;###autoload (autoload 'flymake-rest-less "flymake-rest-less")
 (flymake-rest-define flymake-rest-less
   "A LESS syntax checker using lessc.
 

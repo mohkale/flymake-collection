@@ -15,7 +15,8 @@
 (defvar flymake-rest-clang-include-path nil
   "Default include path for gcc in `flymake-rest-clang'.")
 
-(flymake-rest-define flymake-clang
+;;;###autoload (autoload 'flymake-rest-clang "flymake-rest-clang")
+(flymake-rest-define flymake-rest-clang
   "A C/C++ syntax checker using Clang.
 
 See URL `http://clang.llvm.org/'."
@@ -40,7 +41,7 @@ See URL `http://clang.llvm.org/'."
                      ((or 'c++-mode _) "c++"))
              "-")
   :error-parser
-  (flymake-backend-parse-rx!
+  (flymake-rest-parse-rx
    ((error   bol "<stdin>:" line ":" column ": " (or "fatal" "error") ": " (message) eol)
     (warning bol "<stdin>:" line ":" column ": " "warning"            ": " (message) eol)
     (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol))))

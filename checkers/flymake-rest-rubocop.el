@@ -11,6 +11,7 @@
 (defcustom flymake-rest-rubocop-use-bundler t
   :type 'boolean)
 
+;;;###autoload (autoload 'flymake-rest-rubocop "flymake-rest-rubocop")
 (flymake-rest-define flymake-rest-rubocop
   "A Ruby syntax checker using rubocop.
 
