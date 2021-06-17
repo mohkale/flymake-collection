@@ -58,6 +58,6 @@ See URL `http://proselint.com/'."
                 ("suggestion" :note)
                 ("warning" :warning)
                 ((or "error" _) :error))
-              (concat (propertize .check 'face 'flymake-diag-id!) " " .message))))))
+              (concat (propertize .check 'face 'flymake-rest-diag-id) " " .message))))))
 
 (provide 'flymake-rest-proselint)

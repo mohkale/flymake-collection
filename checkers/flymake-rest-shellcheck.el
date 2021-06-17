@@ -61,6 +61,6 @@ See URL `https://github.com/koalaman/shellcheck/'."
                 ("error" :error)
                 ("warning" :warning)
                 ((or "info" "style" _) :note))
-              (concat (propertize (format "SC%s" .code) 'face 'flymake-diag-id!) " " .message))))))
+              (concat (propertize (format "SC%s" .code) 'face 'flymake-rest-diag-id) " " .message))))))
 
 (provide 'flymake-rest-shellcheck)
