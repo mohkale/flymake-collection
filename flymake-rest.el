@@ -8,7 +8,7 @@
 ;; Keywords: language tools
 ;; Package-Requires: ((emacs "26.1") (flymake "1"))
 ;; SPDX-License-Identifier: MIT
-;; Version: 3.1
+;; Version: 1.0.0
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 ;;
