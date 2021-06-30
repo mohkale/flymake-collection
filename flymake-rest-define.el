@@ -111,9 +111,10 @@ diagnostics to parse this form should evaluate to nil."
          (proc-symb (intern "proc"))
          (source-symb (intern "fmqd-source"))
          (current-diags-symb (intern "diag"))
-         (cleanup-form (when (and (eq write-type 'file)
-                                  (not source-inplace))
-                         `((delete-directory ,temp-dir-symb t))))
+         (cleanup-form (when (eq write-type 'file)
+                         (if source-inplace
+                             `((delete-file ,temp-file-symb))
+                           `((delete-directory ,temp-dir-symb t)))))
          (not-obsolete-form `((eq ,proc-symb (plist-get (buffer-local-value 'flymake-rest-define--procs ,source-symb) ',name)))))
     ;; Sanitise parsed inputs from `defs'.
     (unless (memq write-type '(file pipe nil))
@@ -126,19 +127,23 @@ diagnostics to parse this form should evaluate to nil."
               ,@(when (eq write-type 'file)
                   `((,temp-dir-symb
                      ,@(let ((forms (append (when source-inplace
-                                              `((when-let ((file (buffer-file-name)))
-                                                  (file-name-directory file))
-                                                default-directory))
+                                              `((when-let ((dir (or (when-let ((file (buffer-file-name)))
+                                                                      (file-name-directory file))
+                                                                    default-directory)))
+                                                  (unless (file-exists-p dir)
+                                                    (error "Checker needs to be run in the cwd, but the cwd doesn't exist: %s" dir))
+                                                  dir)))
                                             '((make-temp-file "flymake-" t)))))
                          (if (> (length forms) 1)
                              `((or ,@forms))
                            forms)))
                     (,temp-file-symb
-                     (concat
-                      (file-name-as-directory ,temp-dir-symb)
-                      (concat ".flymake_"
-                              (file-name-nondirectory (or (buffer-file-name)
-                                                          (buffer-name))))))))
+                     (let ((temporary-file-directory ,temp-dir-symb)
+                           (basename (file-name-nondirectory (or (buffer-file-name)
+                                                                 (buffer-name)))))
+                       (make-temp-file ".flymake_"
+                                       nil
+                                       (concat "_" basename))))))
               ,@(plist-get defs :pre-let))
          ;; With vars defined, do :pre-check.
          ,@(when-let ((pre-check (plist-get defs :pre-check)))
