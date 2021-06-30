@@ -48,3 +48,5 @@ See URL `http://lesscss.org'."
 
 (provide 'flymake-rest-less)
 
+
+;;; flymake-rest-less.el ends here

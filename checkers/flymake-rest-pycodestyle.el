@@ -44,3 +44,5 @@
    ((error bol (file-name) ":" line ":" column ": " (id (or "E" "W") (one-or-more digit)) " " (message) eol))))
 
 (provide 'flymake-rest-pycodestyle)
+
+;;; flymake-rest-pycodestyle.el ends here

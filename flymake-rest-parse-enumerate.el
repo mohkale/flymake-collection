@@ -31,7 +31,7 @@
 ;;;###autoload
 (defmacro flymake-rest-parse-enumerate (gen &rest body)
   "Error parser for `flymake-backend-define' which parses all of
-the diagnostics at once using GEN and then preparing them one-at-a-time
+the diagnostics at once using GEN and then prepares them one-at-a-time
 with BODY.
 
 The value of the current entry from GEN in BODY will be set to the variable
@@ -52,3 +52,5 @@ The value of the current entry from GEN in BODY will be set to the variable
          res))))
 
 (provide 'flymake-rest-parse-enumerate)
+
+;;; flymake-rest-parse-enumerate.el ends here

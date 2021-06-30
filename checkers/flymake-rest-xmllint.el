@@ -48,3 +48,5 @@ The xmllint is part of libxml2, see URL
 
 (provide 'flymake-rest-xmllint)
 ;;; flymake-rest-xml.el ends here
+
+;;; flymake-rest-xmllint.el ends here

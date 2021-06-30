@@ -31,7 +31,8 @@
 
 (defcustom flymake-rest-markdownlint-style nil
   "Path to the style config for markdownlint."
-  :type 'string)
+  :type 'string
+  :group 'flymake-rest)
 
 ;;;###autoload (autoload 'flymake-rest-markdownlint "flymake-rest-markdownlint")
 (flymake-rest-define flymake-rest-markdownlint
@@ -51,3 +52,5 @@ See URL `https://github.com/markdownlint/markdownlint'."
    ((error bol "(stdin):" line ": " (id "MD" (+ digit)) " " (message) eol))))
 
 (provide 'flymake-rest-markdownlint)
+
+;;; flymake-rest-markdownlint.el ends here

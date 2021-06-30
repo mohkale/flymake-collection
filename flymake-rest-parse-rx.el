@@ -155,3 +155,5 @@ For an example of this macro in action, see `flymake-rest-pycodestyle'."
        res)))
 
 (provide 'flymake-rest-parse-rx)
+
+;;; flymake-rest-parse-rx.el ends here

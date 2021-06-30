@@ -49,3 +49,5 @@
     (warning bol (? "g") "awk: -:" line ": " "warning"            ": " (message) eol))))
 
 (provide 'flymake-rest-awk-gawk)
+
+;;; flymake-rest-awk-gawk.el ends here

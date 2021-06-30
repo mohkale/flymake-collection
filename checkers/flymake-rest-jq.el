@@ -49,3 +49,5 @@ See URL `https://stedolan.github.io/jq/'."
 
 (provide 'flymake-rest-jq)
 
+
+;;; flymake-rest-jq.el ends here

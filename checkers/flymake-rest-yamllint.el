@@ -44,3 +44,5 @@ See URL `https://github.com/adrienverge/yamllint'."
     (warning bol "stdin:" line ":" column ": " "[warning] " (message) eol))))
 
 (provide 'flymake-rest-yamllint)
+
+;;; flymake-rest-yamllint.el ends here

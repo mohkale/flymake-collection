@@ -46,3 +46,5 @@ See URL `https://github.com/zaach/jsonlint'."
 
 (provide 'flymake-rest-jsonlint)
 
+
+;;; flymake-rest-jsonlint.el ends here

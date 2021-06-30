@@ -27,11 +27,11 @@
 
 ;;;###autoload
 (defun flymake-rest-change-checker (&optional arg)
-  "Interactively select and enable/disable checker for the current major-mode.
-With ARG select a checker regardless of major-mode."
+  "Interactively select and enable/disable checker for the current `major-mode'.
+With ARG select a checker regardless of `major-mode'."
   (interactive "P")
   (let ((cands
-         (remove-duplicates
+         (cl-remove-duplicates
           (cl-loop for (mode . checkers) in
                    (if arg
                        flymake-rest-config
@@ -88,3 +88,5 @@ With ARG select a checker regardless of major-mode."
       (flymake-start))))
 
 (provide 'flymake-rest-commands)
+
+;;; flymake-rest-commands.el ends here

@@ -38,7 +38,8 @@
 (defmacro flymake-rest-define (name &optional docstring &rest defs)
   "Quickly define a backend for use with Flymake.
 This macro creates a new function NAME which is suitable for use with the
-variable `flymake-diagnostic-functions'.
+variable `flymake-diagnostic-functions'. DOCSTRING if given will become the
+docstring of the checker function.
 
 DEFS is a plist of values used to setup the backend. The only required fields
 in DEFS is :command and :error-parser.
@@ -67,7 +68,7 @@ suffix the messages for each diagnostic.
 
 :write-type specifies how the process for flymake should recieve the input.
 It should be one of 'pipe or 'file (defaulting to 'pipe). When set to file
-a temporary file will be created copying the contents of the current-buffer.
+a temporary file will be created copying the contents of the `current-buffer'.
 The variable fmqd-temp-file and fmqd-temp-dir will be bound in the body
 of the rest of the keywords that provide access to the temp-file. When set
 to pipe after the process has been started all of the current buffers input
@@ -80,7 +81,7 @@ will be set to a folder in the systems temporary directory.
 :pre-let is a `let*' form that is assigned after any backend-agnostic let
 forms have been setup.
 
-:pre-check is a lisp form that will be executed immeadiately before any pending
+:pre-check is a Lisp form that will be executed immeadiately before any pending
 checker processes are killed and a new process is begun. It can check conditions
 to ensure launching the checker program is possible. If something is wrong it
 should signal an error.
@@ -240,3 +241,5 @@ diagnostics to parse this form should evaluate to nil."
              ,proc-symb))))))
 
 (provide 'flymake-rest-define)
+
+;;; flymake-rest-define.el ends here

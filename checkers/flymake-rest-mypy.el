@@ -54,3 +54,5 @@ See URL `http://mypy-lang.org/'."
     (note    bol (file-name) ":" line ":" column ": note: "    (message) eol))))
 
 (provide 'flymake-rest-mypy)
+
+;;; flymake-rest-mypy.el ends here

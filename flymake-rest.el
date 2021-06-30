@@ -6,7 +6,7 @@
 ;; Created: 15 June 2021
 ;; Homepage: https://github.com/mohkale/flymake-rest
 ;; Keywords: language tools
-;; Package-Requires: ((emacs "26.1") (flymake "1"))
+;; Package-Requires: ((emacs "27.1"))
 ;; SPDX-License-Identifier: MIT
 ;; Version: 1.0.0
 
@@ -43,10 +43,11 @@
 ;;; Code:
 
 (defgroup flymake-rest nil
-  "Flymake flycheck compatibility"
-  :prefix "flymake-rest")
+  "Flymake flycheck compatibility."
+  :prefix "flymake-rest"
+  :group 'flymake)
 
-(defgroup consult-faces nil
+(defgroup flymake-rest-faces nil
   "Faces used by flymake-rest."
   :group 'flymake-rest
   :group 'faces)
@@ -80,3 +81,5 @@ like output from OUTPUT into a list and then returns it."
     objects))
 
 (provide 'flymake-rest)
+
+;;; flymake-rest.el ends here

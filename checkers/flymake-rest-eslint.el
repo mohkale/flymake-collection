@@ -66,3 +66,5 @@ See URL `https://eslint.org/'."
               (concat "[" .ruleId "] " .message))))))
 
 (provide 'flymake-rest-eslint)
+
+;;; flymake-rest-eslint.el ends here

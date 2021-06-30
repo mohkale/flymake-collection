@@ -47,3 +47,5 @@
      body)))
 
 (provide 'flymake-rest-hook-use-package)
+
+;;; flymake-rest-hook-use-package.el ends here

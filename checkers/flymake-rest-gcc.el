@@ -30,10 +30,14 @@
 
 (defcustom flymake-rest-gcc-args
   '("-pedantic" "-pedantic-errors")
-  "Command line arguments always passed to `flymake-rest-gcc'.")
+  "Command line arguments always passed to `flymake-rest-gcc'."
+  :type 'list
+  :group 'flymake-rest)
 
 (defcustom flymake-rest-gcc-include-path nil
-  "Default include path for gcc in `flymake-rest-gcc'.")
+  "Default include path for gcc in `flymake-rest-gcc'."
+  :type 'list
+  :group 'flymake-rest)
 
 ;;;###autoload (autoload 'flymake-rest-gcc "flymake-rest-gcc")
 (flymake-rest-define flymake-rest-gcc
@@ -68,3 +72,5 @@ Requires GCC 4.4 or newer.  See URL `https://gcc.gnu.org/'."
     (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol))))
 
 (provide 'flymake-rest-gcc)
+
+;;; flymake-rest-gcc.el ends here

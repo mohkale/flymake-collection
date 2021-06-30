@@ -46,3 +46,5 @@ See URL `https://github.com/htacg/tidy-html5'."
     (warning bol "line " line " column " column " - Warning: " (message) eol))))
 
 (provide 'flymake-rest-html-tidy)
+
+;;; flymake-rest-html-tidy.el ends here

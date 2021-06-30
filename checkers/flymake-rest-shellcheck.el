@@ -64,3 +64,5 @@ See URL `https://github.com/koalaman/shellcheck/'."
               (concat (propertize (format "SC%s" .code) 'face 'flymake-rest-diag-id) " " .message))))))
 
 (provide 'flymake-rest-shellcheck)
+
+;;; flymake-rest-shellcheck.el ends here

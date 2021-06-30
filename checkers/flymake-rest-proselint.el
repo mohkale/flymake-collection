@@ -49,15 +49,17 @@ See URL `http://proselint.com/'."
           (buffer-substring-no-properties
            (point-min) (point-max))))))
     (let-alist it
-      (let ((loc (cons (car (flymake-diag-region fmqd-source .line .column))
-                       (cdr (flymake-diag-region fmqd-source .endLine .endColumn)))))
-        (list fmqd-source
-              .start
-              .end
-              (pcase .severity
-                ("suggestion" :note)
-                ("warning" :warning)
-                ((or "error" _) :error))
-              (concat (propertize .check 'face 'flymake-rest-diag-id) " " .message))))))
+      ;; (cons (car (flymake-diag-region fmqd-source .line .column))
+      ;;       (cdr (flymake-diag-region fmqd-source .endLine .endColumn)))
+      (list fmqd-source
+            .start
+            .end
+            (pcase .severity
+              ("suggestion" :note)
+              ("warning" :warning)
+              ((or "error" _) :error))
+            (concat (propertize .check 'face 'flymake-rest-diag-id) " " .message)))))
 
 (provide 'flymake-rest-proselint)
+
+;;; flymake-rest-proselint.el ends here

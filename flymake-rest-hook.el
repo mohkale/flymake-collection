@@ -25,17 +25,21 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 ;;;###autoload
 (defcustom flymake-rest-config nil
   "Configuration mapping major-modes to flymake-backends."
-  :type 'list)
+  :type 'list
+  :group 'flymake-rest)
 
 (defcustom flymake-rest-config-inherit nil
-  "When true any configured checkers for a parent major-mode are
-also added to `flymake-diagnostic-functions'."
-  :type 'boolean)
+  "When true diagnostic hooks inherit parent-mode hooks."
+  :type 'boolean
+  :group 'flymake-rest)
 
 (defun flymake-rest-configured-checkers (mode)
+  "Fetch the list of diagnostic functions configured for MODE."
   (let (checkers
         (modes (list mode)))
     ;; Consider all the parent modes as well.
@@ -61,8 +65,7 @@ also added to `flymake-diagnostic-functions'."
     (nreverse checkers)))
 
 (defun flymake-rest-hook-set-backends ()
-  "Function to add all the diagnostic for the current-major mode
-from `flymake-rest-config' to `flymake-diagnostic-functions'."
+  "Setup `flymake-diagnostic-functions' using `flymake-rest-config'."
   (dolist (it (flymake-rest-configured-checkers major-mode))
     (add-hook 'flymake-diagnostic-functions (car it) (cdr it) t)))
 
@@ -76,3 +79,5 @@ from `flymake-rest-config' to `flymake-diagnostic-functions'."
   (remove-hook 'after-change-major-mode-hook #'flymake-rest-hook-set-backends))
 
 (provide 'flymake-rest-hook)
+
+;;; flymake-rest-hook.el ends here

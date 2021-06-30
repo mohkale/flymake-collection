@@ -68,3 +68,5 @@ See URL `http://clang.llvm.org/'."
     (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol))))
 
 (provide 'flymake-rest-gcc)
+
+;;; flymake-rest-clang.el ends here

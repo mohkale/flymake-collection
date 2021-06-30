@@ -66,3 +66,5 @@
               (concat (propertize .message-id 'face 'flymake-rest-diag-id) " " .message))))))
 
 (provide 'flymake-rest-pylint)
+
+;;; flymake-rest-pylint.el ends here

@@ -30,7 +30,9 @@
   (require 'flymake-rest-parse-rx))
 
 (defcustom flymake-rest-rubocop-use-bundler t
-  :type 'boolean)
+  "When true use bundle exec for rubocop checks."
+  :type 'boolean
+  :group 'flymake-rest)
 
 ;;;###autoload (autoload 'flymake-rest-rubocop "flymake-rest-rubocop")
 (flymake-rest-define flymake-rest-rubocop
@@ -69,3 +71,5 @@ See URL `https://github.com/rubocop/rubocop'."
     (note    bol (file-name) ":" line ":" column ": " "W"          ": " (? "[Correctable] ") (message) eol))))
 
 (provide 'flymake-rest-rubocop)
+
+;;; flymake-rest-rubocop.el ends here
