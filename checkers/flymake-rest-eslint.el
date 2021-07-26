@@ -54,9 +54,9 @@ See URL `https://eslint.org/'."
          (buffer-substring-no-properties
           (point-min) (point-max)))))
     (let-alist it
-      (let ((loc (cons (car (flymake-diag-region fmqd-source .line .column))
-                       (cdr (flymake-diag-region fmqd-source .endLine .endColumn)))))
-        (list fmqd-source
+      (let ((loc (cons (car (flymake-diag-region flymake-rest-source .line .column))
+                       (cdr (flymake-diag-region flymake-rest-source .endLine .endColumn)))))
+        (list flymake-rest-source
               (car loc)
               (cdr loc)
               (pcase .severity

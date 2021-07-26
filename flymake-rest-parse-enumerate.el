@@ -38,7 +38,7 @@ The value of the current entry from GEN in BODY will be set to the variable
 `it'. BODY should evaluate to a form that can be passed to
 `flymake-make-diagnostic'."
   (declare (indent 1))
-  (let ((context-var (intern "fmqd-context")))
+  (let ((context-var (intern "flymake-rest-context")))
     `(progn
        (unless (alist-get 'enumerated ,context-var)
          (push (cons 'entries ,gen) ,context-var)

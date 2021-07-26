@@ -46,7 +46,7 @@ See URL `http://mypy-lang.org/'."
                  "--no-color-output"
                  "--show-absolute-path"
                  "--show-error-codes"
-                 fmqd-temp-file)
+                 flymake-rest-temp-file)
   :error-parser
   (flymake-rest-parse-rx
    ((error   bol (file-name) ":" line ":" column ": error: "   (message) eol)

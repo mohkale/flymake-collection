@@ -105,15 +105,15 @@ For an example of this macro in action, see `flymake-rest-pycodestyle'."
     ;; are no-more diagnostics to be parsed, we wrap it in a loop that exits
     ;; the moment we find a match, but otherwise keeps moving through diagnostics
     ;; until there actually aren't any more to match.
-    `(let (res
-           file-name line column message id end-line end-column severity-ix)
+    `(let (res ; file-name
+           line column message id end-line end-column severity-ix)
        (while (and (not res)
                    (search-forward-regexp ,combined-regex nil t))
          (setq
           res
           (save-match-data
             (save-excursion
-              (setq file-name (match-string 1)
+              (setq ; file-name (match-string 1)
                     line (match-string 2)
                     column (match-string 3)
                     message (match-string 4)
@@ -133,18 +133,18 @@ For an example of this macro in action, see `flymake-rest-pycodestyle'."
                                            (symbol-name it)))
                             nil))
                (t
-                (let ((loc (flymake-diag-region fmqd-source
+                (let ((loc (flymake-diag-region flymake-rest-source
                                                 (string-to-number line)
                                                 (when column
                                                   (string-to-number column))))
                       (loc-end (when end-line
-                                 (flymake-diag-region fmqd-source
+                                 (flymake-diag-region flymake-rest-source
                                                       (string-to-number end-line)
                                                       (when end-column
                                                         (string-to-number end-column))))))
                   (when loc-end
                     (setcdr loc (cdr loc-end)))
-                  (list fmqd-source
+                  (list flymake-rest-source
                         (car loc)
                         (cdr loc)
                         (nth severity-ix (quote ,severity-seq))

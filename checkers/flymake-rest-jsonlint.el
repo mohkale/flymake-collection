@@ -39,7 +39,7 @@ See URL `https://github.com/zaach/jsonlint'."
   :pre-check (unless jsonlint-exec
                (error "Cannot find jsonlint executable"))
   :write-type 'file
-  :command (list jsonlint-exec "-c" "-q" fmqd-temp-file)
+  :command (list jsonlint-exec "-c" "-q" flymake-rest-temp-file)
   :error-parser
   (flymake-rest-parse-rx
    ((error bol (file-name) ": line " line ", col " column ", " (message) eol))))

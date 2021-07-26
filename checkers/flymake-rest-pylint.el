@@ -46,7 +46,7 @@
                  "-m" "pylint"
                  "--reports=n"
                  "--output-format=json"
-                 fmqd-temp-file)
+                 flymake-rest-temp-file)
   :error-parser
   (flymake-rest-parse-enumerate
       (car
@@ -54,8 +54,8 @@
         (buffer-substring-no-properties
          (point-min) (point-max))))
     (let-alist it
-      (let ((loc (flymake-diag-region fmqd-source .line .column)))
-        (list fmqd-source
+      (let ((loc (flymake-diag-region flymake-rest-source .line .column)))
+        (list flymake-rest-source
               (car loc)
               (cdr loc)
               (pcase .type

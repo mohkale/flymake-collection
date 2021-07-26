@@ -33,7 +33,27 @@
 (require 'flymake)
 
 ;;;###autoload
-(defvar-local flymake-rest-define--procs nil)
+(defvar-local flymake-rest-define--procs nil
+  "The local plist of checker processes running in the current buffer.
+When a checker process is begun its pushed into this plist and when its
+finished its removed and killed. In the very often circumstance where a
+new check is begun while an old check is still pending, the old check is
+killed and replaced with the new check.")
+
+(defvar flymake-rest-context nil
+  "An empty variable lexically bound into a checker.
+You can modify this at will within the checker, using it for
+caching or memoization or whatever else you need.")
+
+(defvar flymake-rest-source nil
+  "The lexically bound source buffer being checked.")
+
+(defvar flymake-rest-temp-file nil
+  "The path to the temporary file containing a copy of `flymake-rest-source'.
+This is only available when specifying :write-type 'file.")
+
+(defvar flymake-rest-temp-dir nil
+  "The dirname of `flymake-rest-temp-file'.")
 
 (defmacro flymake-rest-define (name &optional docstring &rest defs)
   "Quickly define a backend for use with Flymake.
@@ -46,16 +66,10 @@ in DEFS is :command and :error-parser.
 
 Available Variables
 
-fmqd-source, fmqd-temp-file, fmdq-temp-dir, fmqd-context.
+flymake-rest-source, flymake-rest-temp-file, fmdq-temp-dir, flymake-rest-context.
 Within the body of :error-parser and :command, several macro specific variables
-are made available. This includes (1) fmqd-source, (2) fmqd-temp-file,
-(3) fmqd-temp-dir, (4) fmqd-context.
-
-1: The source buffer that's being checked by the checker.
-2: The path to the temporary file that was created when using :write-type file.
-3: The dirname of fmqd-temp-file when using :write-type file.
-4: A general purpose list variable that can be used however the developer sees
-   fit. This is useful for example in `flymake-rest-parse-enumerate'.
+are made available. This includes (1) `flymake-rest-source',
+(2) `flymake-rest-temp-file', (3) `flymake-rest-temp-dir', (4) `flymake-rest-context'.
 
 Body Definitions
 
@@ -69,12 +83,12 @@ suffix the messages for each diagnostic.
 :write-type specifies how the process for flymake should recieve the input.
 It should be one of 'pipe or 'file (defaulting to 'pipe). When set to file
 a temporary file will be created copying the contents of the `current-buffer'.
-The variable fmqd-temp-file and fmqd-temp-dir will be bound in the body
+The variable flymake-rest-temp-file and flymake-rest-temp-dir will be bound in the body
 of the rest of the keywords that provide access to the temp-file. When set
 to pipe after the process has been started all of the current buffers input
 will be passed to the process through standard-input.
 
-:source-inplace is a boolean that sets fmqd-temp-dir to the current working
+:source-inplace is a boolean that sets flymake-rest-temp-dir to the current working
 directory. By default this is nil and the temp-file used for :write-type 'file
 will be set to a folder in the systems temporary directory.
 
@@ -105,12 +119,12 @@ diagnostics to parse this form should evaluate to nil."
       (error "Missing flymake backend definition `%s'" elem)))
   (let* ((write-type (or (eval (plist-get defs :write-type)) 'pipe))
          (source-inplace (plist-get defs :source-inplace))
-         (temp-dir-symb (intern "fmqd-temp-dir"))
-         (temp-file-symb (intern "fmqd-temp-file"))
-         (err-symb (intern "fmqd-err"))
+         (temp-dir-symb (intern "flymake-rest-temp-dir"))
+         (temp-file-symb (intern "flymake-rest-temp-file"))
+         (err-symb (intern "flymake-rest-err"))
          (diags-symb (intern "diags"))
          (proc-symb (intern "proc"))
-         (source-symb (intern "fmqd-source"))
+         (source-symb (intern "flymake-rest-source"))
          (current-diags-symb (intern "diag"))
          (cleanup-form (when (eq write-type 'file)
                          (if source-inplace
@@ -124,7 +138,7 @@ diagnostics to parse this form should evaluate to nil."
     `(defun ,name (report-fn &rest _args)
        ,docstring
        (let* ((,source-symb (current-buffer))
-              (fmqd-context nil)
+              (flymake-rest-context nil)
               ,@(when (eq write-type 'file)
                   `((,temp-dir-symb
                      ,@(let ((forms (append (when source-inplace

@@ -38,7 +38,7 @@
     (error "Cannot find pycodestyle executable"))
   :write-type 'file
   :source-inplace t
-  :command (list pycodestyle-exec fmqd-temp-file)
+  :command (list pycodestyle-exec flymake-rest-temp-file)
   :error-parser
   (flymake-rest-parse-rx
    ((error bol (file-name) ":" line ":" column ": " (id (or "E" "W") (one-or-more digit)) " " (message) eol))))
