@@ -40,21 +40,6 @@ finished its removed and killed. In the very often circumstance where a
 new check is begun while an old check is still pending, the old check is
 killed and replaced with the new check.")
 
-(defvar flymake-rest-context nil
-  "An empty variable lexically bound into a checker.
-You can modify this at will within the checker, using it for
-caching or memoization or whatever else you need.")
-
-(defvar flymake-rest-source nil
-  "The lexically bound source buffer being checked.")
-
-(defvar flymake-rest-temp-file nil
-  "The path to the temporary file containing a copy of `flymake-rest-source'.
-This is only available when specifying :write-type 'file.")
-
-(defvar flymake-rest-temp-dir nil
-  "The dirname of `flymake-rest-temp-file'.")
-
 (defmacro flymake-rest-define (name &optional docstring &rest defs)
   "Quickly define a backend for use with Flymake.
 This macro creates a new function NAME which is suitable for use with the
