@@ -29,6 +29,13 @@
   (require 'flymake-rest-define)
   (require 'flymake-rest-parse-enumerate))
 
+(defcustom flymake-rest-shellcheck-follow-sources t
+  "Whether to follow"
+  :type '(choice (const :tag "Follow source files" t)
+                 (const :tag "Follow source files and lint them" lint)
+                 (const :tag "Do not follow source files" nil))
+  :group 'flymake-rest)
+
 ;;;###autoload (autoload 'flymake-rest-shellcheck "flymake-rest-shellcheck")
 (flymake-rest-define flymake-rest-shellcheck
   "A shell script syntax and style checker using Shellcheck.
@@ -43,7 +50,10 @@ See URL `https://github.com/koalaman/shellcheck/'."
              "--format" "json"
              ,@(when-let ((sh (bound-and-true-p sh-shell)))
                  `("--shell" ,(symbol-name sh)))
-             "--external-sources"
+             ,@(when flymake-rest-shellcheck-follow-sources
+                 `("--external-sources"
+                   ,@(when (eq flymake-rest-shellcheck-follow-sources 'lint)
+                       '("--check-sourced"))))
              "-")
   :error-parser
   (flymake-rest-parse-enumerate
