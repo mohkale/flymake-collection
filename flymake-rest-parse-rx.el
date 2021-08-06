@@ -84,23 +84,24 @@ regexp that matched it (as a performance improvement).
 For an example of this macro in action, see `flymake-rest-pycodestyle'."
   (unless (> (length regexps) 0)
     (error "Must supply at least one regexp for error, warning or note"))
-  ;; To avoid having to rematch each diagnostic more than once we append
-  ;; a special extra capture group (greater than all the ones above) that
-  ;; simply matches the empty string. Then we can index the groups after
-  ;; 7 and use that to determine the severity of the symbol.
-  (setq regexps
-        (cl-loop for (severity . regex) in regexps
-                 with count = 7
-                 do (setq count (1+ count))
-                 collect (cons `(seq ,@regex (group-n ,count ""))
-                               (intern (concat ":" (symbol-name severity))))))
 
-  (let ((combined-regex
-         (let ((rx-constituents (append flymake-rest-parse-rx-constituents
-                                        rx-constituents nil)))
-           (rx-to-string `(or ,@(mapcar #'car regexps))
-                         'no-group)))
-        (severity-seq (mapcar #'cdr regexps)))
+  (let* ((group-count (length flymake-rest-parse-rx-constituents))
+         (regexps
+          ;; To avoid having to rematch each diagnostic more than once we append
+          ;; a special extra capture group (greater than all the ones above) that
+          ;; simply matches the empty string. Then we can index the groups after
+          ;; the ones above and use that to determine the severity of the symbol.
+          (cl-loop for (severity . regex) in regexps
+                   with count = group-count
+                   do (setq count (1+ count))
+                   collect (cons `(seq ,@regex (group-n ,count ""))
+                                 (intern (concat ":" (symbol-name severity))))))
+         (combined-regex
+          (let ((rx-constituents (append flymake-rest-parse-rx-constituents
+                                         rx-constituents nil)))
+            (rx-to-string `(or ,@(mapcar #'car regexps))
+                          'no-group)))
+         (severity-seq (mapcar #'cdr regexps)))
     ;; Because if this evaluates to nil `flymake-rest-define' thinks there
     ;; are no-more diagnostics to be parsed, we wrap it in a loop that exits
     ;; the moment we find a match, but otherwise keeps moving through diagnostics
@@ -120,8 +121,10 @@ For an example of this macro in action, see `flymake-rest-pycodestyle'."
                     id (match-string 5)
                     end-line (match-string 6)
                     end-column (match-string 7)
-                    severity-ix (seq-find #'match-string
-                                          (number-sequence 0 ,(- (length regexps) 1))))
+                    severity-ix (- (seq-find #'match-string
+                                             (number-sequence ,(1+ group-count)
+                                                              ,(+ group-count (length regexps))))
+                                   ,(1+ group-count)))
               (cond
                ;; Log an error when any of the required fields are missing.
                ,@(cl-loop for it in '(severity-ix line message)
