@@ -56,7 +56,7 @@ See URL `https://github.com/mpeterv/luacheck'."
   :pre-check (unless luacheck-exec
                (error "Cannot find luacheck executable"))
   :write-type 'pipe
-  :command `("luacheck"
+  :command `(,luacheck-exec
              "--formatter" "plain"
              "--codes"                   ; Show warning codes
              "--no-color"

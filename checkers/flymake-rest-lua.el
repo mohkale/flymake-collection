@@ -38,7 +38,7 @@ See URL `http://www.lua.org/'."
   :pre-check (unless lua-exec
                (user-error "Cannot find lua compiler executable"))
   :write-type 'pipe
-  :command '("luac" "-p" "-")
+  :command `(,lua-exec "-p" "-")
   :error-parser
   (flymake-rest-parse-rx
    ((error bol

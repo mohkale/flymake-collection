@@ -33,6 +33,8 @@
 
 ;;; Code:
 
+(require 'rx)
+
 (defconst flymake-rest-parse-rx-constituents
   `((file-name ,(lambda (body)
                   (rx-to-string
