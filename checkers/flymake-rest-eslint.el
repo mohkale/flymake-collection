@@ -43,7 +43,7 @@ See URL `https://eslint.org/'."
   `(,eslint-exec
     "--format=json"
     "--stdin"
-    ,@(when-let ((file (buffer-file-name)))
+    ,@(when-let ((file (buffer-file-name flymake-rest-source)))
         (list "--stdin-filename" file)))
   :error-parser
   (flymake-rest-parse-enumerate

@@ -65,7 +65,7 @@ See URL `https://github.com/mpeterv/luacheck'."
                        (mapconcat #'identity flymake-rest-luacheck-standards "+")))
              ,@(when flymake-luacheck-rc
                  (list "--config" flymake-luacheck-rc))
-             ,@(when-let ((file (buffer-file-name)))
+             ,@(when-let ((file (buffer-file-name flymake-rest-source)))
                  (list "--filename" file))
              "-")
   :error-parser

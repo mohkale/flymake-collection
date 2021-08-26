@@ -51,9 +51,11 @@ Requires GCC 4.4 or newer.  See URL `https://gcc.gnu.org/'."
   :write-type 'pipe
   :command `(,gcc-exec
              "-fshow-column"
-             "-iquote" ,(if-let ((file (buffer-file-name)))
+             "-iquote" ,(if-let ((file (buffer-file-name flymake-rest-source)))
                             (file-name-directory file)
-                          default-directory)
+                          (or (buffer-local-value 'default-directory
+                                                  flymake-rest-source)
+                              default-directory))
              ,@(cl-loop for it in flymake-rest-gcc-include-path
                         collect (concat "-I" it))
              ,@flymake-rest-gcc-args

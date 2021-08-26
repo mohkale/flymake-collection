@@ -51,9 +51,11 @@ See URL `http://clang.llvm.org/'."
              "-fno-color-diagnostics"                                 ; Do not include color codes in output
              "-fno-caret-diagnostics"                                 ; Do not visually indicate the source
              "-fno-diagnostics-show-option"                           ; Do not show the corresponding
-             "-iquote" ,(if-let ((file (buffer-file-name)))
+             "-iquote" ,(if-let ((file (buffer-file-name flymake-rest-source)))
                             (file-name-directory file)
-                          default-directory)
+                          (or (buffer-local-value 'default-directory
+                                                  flymake-rest-source)
+                              default-directory))
              ,@(cl-loop for it in flymake-rest-clang-include-path
                         collect (concat "-I" it))
              ,@flymake-rest-clang-args

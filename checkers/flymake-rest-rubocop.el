@@ -41,13 +41,17 @@
 See URL `https://github.com/rubocop/rubocop'."
   :title "rubocop"
   :pre-let ((rubocop-exec (executable-find "rubocop"))
-            (file-name (or (buffer-file-name)
+            (file-name (or (buffer-file-name flymake-rest-source)
                            "-")))
   :pre-check (unless rubocop-exec
                (error "Cannot find rubocop executable"))
   :write-type 'pipe
   :command `(,@(or (and flymake-rest-rubocop-use-bundler
-                        (locate-dominating-file (buffer-file-name) "Gemfile")
+                        (locate-dominating-file (or (buffer-file-name flymake-rest-source)
+                                                    (buffer-local-value 'default-directory
+                                                                        flymake-rest-source)
+                                                    default-directory)
+                                                "Gemfile")
                         (if-let ((bundler-exec (executable-find "bundler")))
                             (list bundler-exec "exec" "rubocop")
                           (flymake-log :warning "In bundler controlled project but bundler not installed")))
