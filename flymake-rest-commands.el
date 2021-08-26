@@ -25,67 +25,71 @@
 (require 'flymake)
 (require 'flymake-rest-hook)
 
-;;;###autoload
-(defun flymake-rest-change-checker (&optional arg)
-  "Interactively select and enable/disable checker for the current `major-mode'.
-With ARG select a checker regardless of `major-mode'."
-  (interactive "P")
-  (let ((cands
-         (cl-remove-duplicates
-          (cl-loop for (mode . checkers) in
-                   (if arg
-                       flymake-rest-config
-                     (list (assoc major-mode flymake-rest-config)))
-                   append
-                   (cl-loop for it in checkers
-                            with checker = nil
-                            do (setq checker (if (symbolp it)
-                                                 it
-                                               (car it)))
-                            with exists = nil
-                            do (setq exists (or (member checker flymake-diagnostic-functions)
-                                                (when-let ((state (gethash checker flymake--backend-state)))
-                                                  (not (flymake--backend-state-disabled state)))))
-                            when checker
-                              collect (list (symbol-name checker)
-                                            mode checker exists)))
-          :test (lambda (a b) (string-equal (car a) (car b))))))
+(defun flymake-rest-change-checker--cands (all-modes)
+  (cl-remove-duplicates
+   (cl-loop for (mode . checkers) in
+            (if all-modes
+                flymake-rest-config
+              (list (assoc major-mode flymake-rest-config)))
+            append
+            (cl-loop for it in checkers
+                     with checker = nil
+                     do (setq checker (if (symbolp it)
+                                          it
+                                        (car it)))
+                     with exists = nil
+                     do (setq exists (or (member checker flymake-diagnostic-functions)
+                                         (when-let ((state (gethash checker flymake--backend-state)))
+                                           (not (flymake--backend-state-disabled state)))))
+                     when checker
+                     collect (list (symbol-name checker)
+                                   mode checker exists)))
+   :test (lambda (a b) (string-equal (car a) (car b)))))
+
+(defun flymake-rest-change-checker--read-checkers (&optional all-modes)
+  (let* ((cands (flymake-rest-change-checker--cands all-modes))
+         (group-function (lambda (cand transform)
+                           (if transform
+                               cand
+                             (symbol-name (cadr (assoc cand cands))))))
+         (affix-function (lambda (cands-keys)
+                           (cl-loop
+                            for cand in cands-keys collect
+                            (list cand (if (cadddr (assoc cand cands)) "-" "+") nil)))))
     (unless cands
       (user-error "No diagnostic functions configured for the current buffer"))
-    (cl-loop for (_cand _mode checker exists) in
-             (mapcar (lambda (it)
-                       (assoc it cands))
-                     (completing-read-multiple
-                      "Diagnostic function: "
-                      (lambda (str pred action)
-                        (if (eq action 'metadata)
-                            `(metadata
-                              ;; Group by the mode this diagnostic function was configured for.
-                              (group-function . ,(lambda (cand transform)
-                                                   (if transform
-                                                       cand
-                                                     (symbol-name (cadr (assoc cand cands))))))
-                              (affixation-function . ,(lambda (cands2)
-                                                        (cl-loop
-                                                         for cand in cands2
-                                                         collect
-                                                         (propertize cand
-                                                                     'display
-                                                                     (concat (if (cadddr (assoc cand cands)) "-" "+")
-                                                                             cand))))))
-                          (complete-with-action action cands str pred)))
-                      nil t))
-             ;; Flymake doesn't let us remove a backend once we've added it, simply
-             ;; disable it.
-             do (if (member checker flymake-diagnostic-functions)
-                    (if exists ;; not disabled
-                        ;; WARN: For some reason disabling the backend doesn't clear any
-                        ;; existing reports for it.
-                        (flymake--disable-backend checker "user chose to disable it")
-                      (flymake--run-backend checker))
-                  (add-hook 'flymake-diagnostic-functions checker nil t)))
-    (when (called-interactively-p 'interactive)
-      (flymake-start))))
+    (mapcar
+     (lambda (it)
+       (assoc it cands))
+     (completing-read-multiple
+      "Diagnostic function: "
+      (lambda (str pred action)
+        (if (eq action 'metadata)
+            `(metadata
+              (group-function . ,group-function)
+              (affixation-function . ,affix-function))
+          (complete-with-action action cands str pred)))
+      nil t))))
+
+;;;###autoload
+(defun flymake-rest-change-checker (checkers)
+  "Interactively select and enable/disable checker for the current `major-mode'.
+With ARG select a checker regardless of `major-mode'."
+  (interactive (list (flymake-rest-change-checker--read-checkers current-prefix-arg)))
+  (when checkers
+    (dolist (checker checkers)
+      (cl-destructuring-bind (_cand _mode checker exists) checker
+        ;; Flymake doesn't let us remove a backend once we've added it, simply
+        ;; disable it.
+        (if (member checker flymake-diagnostic-functions)
+            (if exists ;; not disabled
+                ;; WARN: For some reason disabling the backend doesn't clear any
+                ;; existing reports for it.
+                (flymake--disable-backend checker "User chose to disable it")
+              (flymake--run-backend checker))
+          (add-hook 'flymake-diagnostic-functions checker nil t)))
+      (when (called-interactively-p 'interactive)
+        (flymake-start)))))
 
 (provide 'flymake-rest-commands)
 
