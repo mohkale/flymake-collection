@@ -64,10 +64,19 @@
                (warn "Unknown checker config in `flymake-rest-config': %s" conf)))))
     (nreverse checkers)))
 
+(defcustom flymake-rest-hook-ignore-modes nil
+  "List of modes in which `flymake-rest-hook' is inhibited."
+  :type '(list symbol))
+
 (defun flymake-rest-hook-set-backends ()
   "Setup `flymake-diagnostic-functions' using `flymake-rest-config'."
-  (dolist (it (flymake-rest-configured-checkers major-mode))
-    (add-hook 'flymake-diagnostic-functions (car it) (cdr it) t)))
+  (unless (cl-find-if (lambda (mode)
+                        (or (eq major-mode mode)
+                            (and (boundp mode)
+                                 (eval mode))))
+                      flymake-rest-hook-ignore-modes)
+    (dolist (it (flymake-rest-configured-checkers major-mode))
+      (add-hook 'flymake-diagnostic-functions (car it) (cdr it) t))))
 
 ;;;###autoload
 (defun flymake-rest-hook-setup ()
