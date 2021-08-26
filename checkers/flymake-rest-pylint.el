@@ -33,20 +33,22 @@
 (flymake-rest-define flymake-rest-pylint
   :title "pylint"
   :pre-let ((python-exec (executable-find "python3"))
-            (pylint-exec (executable-find "pylint")))
+            (pylint-exec (executable-find "pylint"))
+            (file-name (or (buffer-file-name flymake-rest-source)
+                           "_")))
   :pre-check
   (progn
     (unless python-exec
       (error "Cannot find python executable"))
     (unless pylint-exec
       (error "Cannot find pylint executable")))
-  :write-type 'file
-  :source-inplace t
+  :write-type 'pipe
   :command (list python-exec
                  "-m" "pylint"
                  "--reports=n"
                  "--output-format=json"
-                 flymake-rest-temp-file)
+                 "--from-stdin"
+                 file-name)
   :error-parser
   (flymake-rest-parse-enumerate
       (car
