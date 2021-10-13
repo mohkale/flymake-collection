@@ -20,6 +20,7 @@ as possible.
   - [[#straight][straight]]
   - [[#configurations][Configurations]]
 - [[#contributing][Contributing]]
+- [[#appendix][Appendix]]
 
 * Installation
 ** Manually
@@ -58,7 +59,7 @@ as possible.
     flymake-diagnostic-functions without any extra configuration or loading being
     needed.
 
-*** Automatically Hooking a Checker to a Major Mode
+*** Associating Checkers with Major Modes
     ~flymake-rest~ provides a special configuration variable to let you associate
     diagnostic functions with major-modes. This can be useful both for automatically
     enabling diagnostic functions and for interactively toggling them based on your
@@ -89,32 +90,44 @@ as possible.
     *Note*: The ~executable-find~ predicate example here is redundant, each checker will
     already make sure any dependent executables are installed before being run.
 
-    To automatically enable diagnostic functions based on ~flymake-rest-config~ you
-    have to call the ~flymake-rest-hook-setup~ function.
-    This can be done through ~use-package~, for example:
+    Lastly there's also a ~use-package~ keyword you can use to define config
+    entries. This is just syntax sugar over pushing these values into
+    ~flymake-rest-config~ as shown above.
+
     #+begin_src emacs-lisp
-      (use-package flymake-rest
-        :hook (after-init . flymake-rest-hook-setup))
+      (use-package python-mode
+        :flymake-hook
+        (python-mode
+         flymake-rest-mypy                      ; Always added to diagnostic functions.
+         (flymake-rest-pycodestyle :disabled t) ; Never added.
+         (flymake-rest-pylint                   ; Added when predicate is true.
+          :predicate (lambda ()
+                       (executable-find "pylint"))))))
     #+end_src
 
-    You can also interactively enable or disable a diagnostic-function from
-    ~flymake-rest-config~ using the ~flymake-rest-change-checker~ command.
+**** Automatically Enabling Syntax Checkers
+     To automatically enable diagnostic functions based on ~flymake-rest-config~ you
+     have to call the ~flymake-rest-hook-setup~ function.
+     This can be done through ~use-package~, for example:
+     #+begin_src emacs-lisp
+       (use-package flymake-rest
+         :hook (after-init . flymake-rest-hook-setup))
+     #+end_src
 
-    Lastly there's also a ~use-package~ keyword you can use to define config
-    entries.
+     You can also interactively enable or disable a diagnostic-function from
+     ~flymake-rest-config~ using the ~flymake-rest-change-checker~ command.
 
-  #+begin_src emacs-lisp
-    (use-package python-mode
-      :flymake-hook
-      (python-mode
-       flymake-rest-mypy                      ; Always added to diagnostic functions.
-       (flymake-rest-pycodestyle :disabled t) ; Never added.
-       (flymake-rest-pylint                   ; Added when predicate is true.
-        :predicate (lambda ()
-                     (executable-find "pylint"))))))
-  #+end_src
+     *Note*: The default value for ~flymake-rest-config~ is empty, however a list of
+     recommended associations can be set by requiring ~flymake-rest-hook-langs~.
 
 * Contributing
   Please do!. There are more linters out there than I have the time to explore, if
   you'd like to add support for a new linter or contribute improvements to an
   existing one, we'd be more than happy to accept.
+
+* Appendix                                                          :ARCHIVE:
+# LocalWords: flymake
+
+# Local Variables:
+# eval: (toc-org-mode 1)
+# End:
