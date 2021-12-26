@@ -101,7 +101,8 @@
 
 (defcustom flymake-rest-hook-ignore-modes nil
   "List of modes in which `flymake-rest-hook' is inhibited."
-  :type '(list symbol))
+  :type '(list symbol)
+  :group 'flymake-rest)
 
 (defun flymake-rest-hook-set-backends ()
   "Setup `flymake-diagnostic-functions' using `flymake-rest-config'."
@@ -121,6 +122,34 @@
 (defun flymake-rest-hook-teardown ()
   "Tear down flymake-hook."
   (remove-hook 'after-change-major-mode-hook #'flymake-rest-hook-set-backends))
+
+
+;;; `use-package' integration
+
+;;;###autoload
+(with-eval-after-load 'use-package-core
+  (defvar flymake-rest-config)
+
+  (declare-function use-package-concat "use-package-core")
+  (declare-function use-package-process-keywords "use-package-core")
+  (defvar use-package-keywords)
+  (defvar use-package-deferring-keywords)
+
+  ;; Add to use-package-keywords, just after :custom.
+  (unless (member :flymake-hook use-package-keywords)
+    (let ((tail (nthcdr (cl-position :custom use-package-keywords)
+                        use-package-keywords)))
+      (setcdr tail (cons :flymake-hook (cdr tail)))))
+
+  (defun use-package-normalize/:flymake-hook (_name _keyword args)
+    args)
+
+  (defun use-package-handler/:flymake-hook (name-symbol _ hooks rest state)
+    (let ((body (use-package-process-keywords name-symbol rest state)))
+      (use-package-concat
+       (cl-loop for it in hooks
+                collect `(push (quote ,it) flymake-rest-config))
+       body))))
 
 (provide 'flymake-rest-hook)
 
