@@ -28,8 +28,43 @@
 (require 'cl-lib)
 
 ;;;###autoload
-(defcustom flymake-rest-config nil
-  "Configuration mapping major-modes to flymake-backends."
+(defcustom flymake-rest-config
+  '((python-mode
+     flymake-rest-pycodestyle
+     (flymake-mypy :disabled t)
+     (flymake-rest-pylint :disabled t))
+    (awk-mode flymake-rest-awk-gawk)
+    (c-mode
+     flymake-rest-clang
+     (flymake-rest-gcc :disabled t))
+    (c++-mode
+     flymake-rest-clang
+     (flymake-rest-gcc :disabled t))
+    (js-mode flymake-rest-eslint)
+    (js2-mode flymake-rest-eslint)
+    (typescript-mode flymake-rest-eslint)
+    (json-mode
+     flymake-rest-jq
+     (flymake-rest-jsonlint :disabled t))
+    (less-mode flymake-rest-less)
+    (markdown-mode
+     flymake-rest-markdownlint
+     flymake-rest-proselint)
+    (lua-mode
+     flymake-rest-luacheck
+     (flymake-rest-lua :disabled t))
+    (sql-mode
+     flymake-rest-sql-lint
+     (flymake-rest-sqlint :disabled t))
+    (ruby-mode flymake-rest-rubocop)
+    ;; (hledger-mode flymake-rest-hledger)
+    (sh-mode flymake-rest-shellcheck)
+    (yaml-mode flymake-rest-yamllint)
+    (web-mode flymake-rest-html-tidy)
+    (org-mode flymake-rest-proselint)
+    (notmuch-message-mode flymake-rest-proselint)
+    (nxml-mode flymake-rest-xmllint))
+  "Configuration mapping major-modes to `flymake' backends."
   :type 'list
   :group 'flymake-rest)
 

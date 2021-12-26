@@ -117,9 +117,6 @@ as possible.
      You can also interactively enable or disable a diagnostic-function from
      ~flymake-rest-config~ using the ~flymake-rest-change-checker~ command.
 
-     *Note*: The default value for ~flymake-rest-config~ is empty, however a list of
-     recommended associations can be set by requiring ~flymake-rest-hook-langs~.
-
 * Contributing
   Please do!. There are more linters out there than I have the time to explore, if
   you'd like to add support for a new linter or contribute improvements to an
