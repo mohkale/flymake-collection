@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-jq "flymake-rest-jq")
-(flymake-rest-define flymake-rest-jq
+(flymake-rest-define-rx flymake-rest-jq
   "JSON checker using the jq tool.
 
 This checker accepts multiple consecutive JSON values in a
@@ -43,11 +42,9 @@ See URL `https://stedolan.github.io/jq/'."
                (error "Cannot find jq executable"))
   :write-type 'pipe
   :command (list jq-exec "." "-" null-device)
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error bol "parse error: " (message) " at line " line ", column " column eol))))
+  :regexps
+  ((error bol "parse error: " (message) " at line " line ", column " column eol)))
 
 (provide 'flymake-rest-jq)
-
 
 ;;; flymake-rest-jq.el ends here

@@ -26,18 +26,17 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-enumerate))
+  (require 'flymake-rest-define))
 
 (defcustom flymake-rest-shellcheck-follow-sources t
-  "Whether to follow"
+  "Whether to follow sources in `flymake-rest-shellcheck'."
   :type '(choice (const :tag "Follow source files" t)
                  (const :tag "Follow source files and lint them" lint)
                  (const :tag "Do not follow source files" nil))
   :group 'flymake-rest)
 
 ;;;###autoload (autoload 'flymake-rest-shellcheck "flymake-rest-shellcheck")
-(flymake-rest-define flymake-rest-shellcheck
+(flymake-rest-define-enumerate flymake-rest-shellcheck
   "A shell script syntax and style checker using Shellcheck.
 
 See URL `https://github.com/koalaman/shellcheck/'."
@@ -55,23 +54,23 @@ See URL `https://github.com/koalaman/shellcheck/'."
                    ,@(when (eq flymake-rest-shellcheck-follow-sources 'lint)
                        '("--check-sourced"))))
              "-")
-  :error-parser
-  (flymake-rest-parse-enumerate
-      (car
-       (flymake-rest-parse-json
-        (buffer-substring-no-properties
-         (point-min) (point-max))))
-    (let-alist it
-      (let ((loc (cons (car (flymake-diag-region flymake-rest-source .line .column))
-                       (cdr (flymake-diag-region flymake-rest-source .endLine .endColumn)))))
-        (list flymake-rest-source
-              (car loc)
-              (cdr loc)
-              (pcase .level
-                ("error" :error)
-                ("warning" :warning)
-                ((or "info" "style" _) :note))
-              (concat (propertize (format "SC%s" .code) 'face 'flymake-rest-diag-id) " " .message))))))
+  :generator
+  (car
+   (flymake-rest-parse-json
+    (buffer-substring-no-properties
+     (point-min) (point-max))))
+  :enumerate-parser
+  (let-alist it
+    (let ((loc (cons (car (flymake-diag-region flymake-rest-source .line .column))
+                     (cdr (flymake-diag-region flymake-rest-source .endLine .endColumn)))))
+      (list flymake-rest-source
+            (car loc)
+            (cdr loc)
+            (pcase .level
+              ("error" :error)
+              ("warning" :warning)
+              ((or "info" "style" _) :note))
+            (concat (propertize (format "SC%s" .code) 'face 'flymake-rest-diag-id) " " .message)))))
 
 (provide 'flymake-rest-shellcheck)
 

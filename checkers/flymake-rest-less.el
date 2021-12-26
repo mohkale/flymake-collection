@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-less "flymake-rest-less")
-(flymake-rest-define flymake-rest-less
+(flymake-rest-define-rx flymake-rest-less
   "A LESS syntax checker using lessc.
 
 Requires lessc 1.4 or newer.
@@ -42,9 +41,8 @@ See URL `http://lesscss.org'."
                (error "Cannot find lessc executable"))
   :write-type 'pipe
   :command (list lessc-exec  "--lint" "--no-color" "-")
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error bol (+ not-newline) ": " (message) " in - on line " line ", column " column ":" eol))))
+  :regexps
+  ((error bol (+ not-newline) ": " (message) " in - on line " line ", column " column ":" eol)))
 
 (provide 'flymake-rest-less)
 

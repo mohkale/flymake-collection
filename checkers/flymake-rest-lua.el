@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-lua "flymake-rest-lua")
-(flymake-rest-define flymake-rest-lua
+(flymake-rest-define-rx flymake-rest-lua
   "A Lua syntax checker using the Lua compiler.
 
 See URL `http://www.lua.org/'."
@@ -39,12 +38,11 @@ See URL `http://www.lua.org/'."
                (user-error "Cannot find lua compiler executable"))
   :write-type 'pipe
   :command `(,lua-exec "-p" "-")
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error bol
-           ;; Skip the name of the luac executable.
-           (minimal-match (zero-or-more not-newline))
-           ": stdin:" line ": " (message) eol))))
+  :regexps
+  ((error bol
+          ;; Skip the name of the luac executable.
+          (minimal-match (zero-or-more not-newline))
+          ": stdin:" line ": " (message) eol)))
 
 (provide 'flymake-rest-lua)
 

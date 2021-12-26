@@ -26,8 +26,7 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 (defcustom flymake-rest-rubocop-use-bundler t
   "When true use bundle exec for rubocop checks."
@@ -35,7 +34,7 @@
   :group 'flymake-rest)
 
 ;;;###autoload (autoload 'flymake-rest-rubocop "flymake-rest-rubocop")
-(flymake-rest-define flymake-rest-rubocop
+(flymake-rest-define-rx flymake-rest-rubocop
   "A Ruby syntax checker using rubocop.
 
 See URL `https://github.com/rubocop/rubocop'."
@@ -68,11 +67,10 @@ See URL `https://github.com/rubocop/rubocop'."
              ;; Rubocop takes the original file name as argument when reading
              ;; from standard input
              "--stdin" ,file-name)
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error   bol (file-name) ":" line ":" column ": " (or "E" "F") ": " (? "[Correctable] ") (message) eol)
-    (warning bol (file-name) ":" line ":" column ": " "C"          ": " (? "[Correctable] ") (message) eol)
-    (note    bol (file-name) ":" line ":" column ": " "W"          ": " (? "[Correctable] ") (message) eol))))
+  :regexps
+  ((error   bol (file-name) ":" line ":" column ": " (or "E" "F") ": " (? "[Correctable] ") (message) eol)
+   (warning bol (file-name) ":" line ":" column ": " "C"          ": " (? "[Correctable] ") (message) eol)
+   (note    bol (file-name) ":" line ":" column ": " "W"          ": " (? "[Correctable] ") (message) eol)))
 
 (provide 'flymake-rest-rubocop)
 

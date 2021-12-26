@@ -26,8 +26,7 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 (defcustom flymake-rest-sql-lint-driver nil
   "The SQL driver to pass to sql-lint."
@@ -38,7 +37,7 @@
   :group 'flymake-rest)
 
 ;;;###autoload (autoload 'flymake-rest-sql-lint "flymake-rest-sql-lint")
-(flymake-rest-define flymake-rest-sql-lint
+(flymake-rest-define-rx flymake-rest-sql-lint
   "A SQL syntax checker using the sql-lint tool.
 
 See URL `https://github.com/joereynolds/sql-lint'."
@@ -50,9 +49,8 @@ See URL `https://github.com/joereynolds/sql-lint'."
   :command `(,lint-exec
              ,@(when flymake-rest-sql-lint-driver
                  `("--driver" ,flymake-rest-sql-lint-driver)))
-  :error-parser
-  (flymake-rest-parse-rx
-    ((warning bol "stdin:" line " [sql-lint: " (id (one-or-more (any alnum "-"))) "] " (message) eol))))
+  :regexps
+  ((warning bol "stdin:" line " [sql-lint: " (id (one-or-more (any alnum "-"))) "] " (message) eol)))
 
 (provide 'flymake-rest-sql-lint)
 

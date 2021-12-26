@@ -23,10 +23,9 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest-define)
 
 (eval-when-compile
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 (defcustom flymake-rest-gcc-args
   '("-pedantic" "-pedantic-errors")
@@ -40,7 +39,7 @@
   :group 'flymake-rest)
 
 ;;;###autoload (autoload 'flymake-rest-gcc "flymake-rest-gcc")
-(flymake-rest-define flymake-rest-gcc
+(flymake-rest-define-rx flymake-rest-gcc
   "A C/C++ syntax checker using GCC.
 
 Requires GCC 4.4 or newer.  See URL `https://gcc.gnu.org/'."
@@ -67,11 +66,10 @@ Requires GCC 4.4 or newer.  See URL `https://gcc.gnu.org/'."
              ;; code.
              "-S" "-o" ,null-device
              "-")
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error   bol "<stdin>:" line ":" column ": " (or "fatal" "error") ": " (message) eol)
-    (warning bol "<stdin>:" line ":" column ": " "warning"            ": " (message) eol)
-    (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol))))
+  :regexps
+  ((error   bol "<stdin>:" line ":" column ": " (? "fatal ") "error" ": " (message) eol)
+   (warning bol "<stdin>:" line ":" column ": " "warning"            ": " (message) eol)
+   (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol)))
 
 (provide 'flymake-rest-gcc)
 

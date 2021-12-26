@@ -26,15 +26,13 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-xmllint "flymake-rest-xmllint")
-(flymake-rest-define flymake-rest-xmllint
+(flymake-rest-define-rx flymake-rest-xmllint
   "A XML syntax checker and validator using the xmllint utility.
 
-The xmllint is part of libxml2, see URL
-`http://www.xmlsoft.org/'."
+The xmllint is part of libxml2, see URL `http://www.xmlsoft.org/'."
   :title "xmllint"
   :pre-let ((xmllint-exec (executable-find "xmllint")))
   :pre-check
@@ -42,11 +40,9 @@ The xmllint is part of libxml2, see URL
     (error "Cannot find xmllint executable"))
   :write-type 'pipe
   :command `(,xmllint-exec "--noout" "-")
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error   bol "-:" line ": " (message) eol))))
+  :regexps
+  ((error bol "-:" line ": " (message) eol)))
 
 (provide 'flymake-rest-xmllint)
-;;; flymake-rest-xml.el ends here
 
 ;;; flymake-rest-xmllint.el ends here

@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-enumerate))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-eslint "flymake-rest-eslint")
-(flymake-rest-define flymake-rest-eslint
+(flymake-rest-define-enumerate flymake-rest-eslint
   "A Javascript syntax and style checker using eslint.
 
 See URL `https://eslint.org/'."
@@ -45,25 +44,30 @@ See URL `https://eslint.org/'."
     "--stdin"
     ,@(when-let ((file (buffer-file-name flymake-rest-source)))
         (list "--stdin-filename" file)))
-  :error-parser
-  (flymake-rest-parse-enumerate
-      (alist-get
-       'messages
-       (caar
-        (flymake-rest-parse-json
-         (buffer-substring-no-properties
-          (point-min) (point-max)))))
-    (let-alist it
-      (let ((loc (cons (car (flymake-diag-region flymake-rest-source .line .column))
-                       (cdr (flymake-diag-region flymake-rest-source .endLine .endColumn)))))
-        (list flymake-rest-source
-              (car loc)
-              (cdr loc)
-              (pcase .severity
-                (2 :error)
-                (1 :warning)
-                (_ :note))
-              (concat "[" .ruleId "] " .message))))))
+  :generator
+  (alist-get
+   'messages
+   (caar
+    (flymake-rest-parse-json
+     (buffer-substring-no-properties
+      (point-min) (point-max)))))
+  :enumerate-parser
+  (let-alist it
+    (let* ((start-loc (flymake-diag-region flymake-rest-source .line .column))
+           (loc (cons (car start-loc)
+                      (cdr
+                       (if (and .endLine .endColumn)
+                           (flymake-diag-region flymake-rest-source
+                                                .endLine (1- .endColumn))
+                         start-loc)))))
+      (list flymake-rest-source
+            (car loc)
+            (cdr loc)
+            (pcase .severity
+              (2 :error)
+              (1 :warning)
+              (_ :note))
+            (concat "[" .ruleId "] " .message)))))
 
 (provide 'flymake-rest-eslint)
 

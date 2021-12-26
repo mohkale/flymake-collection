@@ -6,7 +6,7 @@
 ;; Created: 15 June 2021
 ;; Homepage: https://github.com/mohkale/flymake-rest
 ;; Keywords: language tools
-;; Package-Requires: ((emacs "27.1"))
+;; Package-Requires: ((emacs "27.1") (let-alist "1.0"))
 ;; SPDX-License-Identifier: MIT
 ;; Version: 1.0.0
 
@@ -61,7 +61,7 @@
   "Id of a diagnostic.")
 
 (defun flymake-rest-parse-json (output)
-  "Helper for `flymake-rest-define' to parse JSON output OUTPUT.
+  "Helper for `flymake-rest-define' to parse JSON OUTPUT.
 
 Adapted from `flycheck-parse-json'. This reads a bunch of JSON-Lines
 like output from OUTPUT into a list and then returns it."

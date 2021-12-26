@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-sqlint "flymake-rest-sqlint")
-(flymake-rest-define flymake-rest-sqlint
+(flymake-rest-define-rx flymake-rest-sqlint
   "A SQL syntax checker using the sqlint tool.
 
 See URL `https://github.com/purcell/sqlint'."
@@ -40,20 +39,19 @@ See URL `https://github.com/purcell/sqlint'."
                (error "Cannot find sqlint executable"))
   :write-type 'pipe
   :command (list lint-exec)
-  :error-parser
-  (flymake-rest-parse-rx
-    ((warning bol "stdin:" line ":" column ":WARNING "
-       (message (one-or-more not-newline)
-         (zero-or-more "\n"
-           (one-or-more "  ")
-           (one-or-more not-newline)))
-       eol)
-      (error bol "stdin:" line ":" column ":ERROR "
-        (message (one-or-more not-newline)
-          (zero-or-more "\n"
-            (one-or-more "  ")
-            (one-or-more not-newline)))
-        eol))))
+  :regexps
+  ((warning bol "stdin:" line ":" column ":WARNING "
+     (message (one-or-more not-newline)
+       (zero-or-more "\n"
+         (one-or-more "  ")
+         (one-or-more not-newline)))
+     eol)
+    (error bol "stdin:" line ":" column ":ERROR "
+      (message (one-or-more not-newline)
+        (zero-or-more "\n"
+          (one-or-more "  ")
+          (one-or-more not-newline)))
+      eol)))
 
 (provide 'flymake-rest-sqlint)
 

@@ -26,8 +26,7 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 (defvar flymake-rest-clang-args
   '("-pedantic" "-pedantic-errors")
@@ -37,7 +36,7 @@
   "Default include path for gcc in `flymake-rest-clang'.")
 
 ;;;###autoload (autoload 'flymake-rest-clang "flymake-rest-clang")
-(flymake-rest-define flymake-rest-clang
+(flymake-rest-define-rx flymake-rest-clang
   "A C/C++ syntax checker using Clang.
 
 See URL `http://clang.llvm.org/'."
@@ -63,11 +62,10 @@ See URL `http://clang.llvm.org/'."
                      ('c-mode "c")
                      ((or 'c++-mode _) "c++"))
              "-")
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error   bol "<stdin>:" line ":" column ": " (or "fatal" "error") ": " (message) eol)
-    (warning bol "<stdin>:" line ":" column ": " "warning"            ": " (message) eol)
-    (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol))))
+  :regexps
+  ((error   bol "<stdin>:" line ":" column ": " (? "fatal ") "error" ": " (message) eol)
+   (warning bol "<stdin>:" line ":" column ": " "warning"            ": " (message) eol)
+   (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol)))
 
 (provide 'flymake-rest-gcc)
 

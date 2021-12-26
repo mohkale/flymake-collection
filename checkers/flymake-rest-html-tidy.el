@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-html-tidy "flymake-rest-html-tidy")
-(flymake-rest-define flymake-rest-html-tidy
+(flymake-rest-define-rx flymake-rest-html-tidy
   "A HTML syntax and style checker using Tidy.
 
 See URL `https://github.com/htacg/tidy-html5'."
@@ -40,10 +39,9 @@ See URL `https://github.com/htacg/tidy-html5'."
                (error "Cannot find tidy executable"))
   :write-type 'pipe
   :command `(,tidy-exec "-lang" "en" "-e" "-q")
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error   bol "line " line " column " column " - Error: "   (message) eol)
-    (warning bol "line " line " column " column " - Warning: " (message) eol))))
+  :regexps
+  ((error   bol "line " line " column " column " - Error: "   (message) eol)
+   (warning bol "line " line " column " column " - Warning: " (message) eol)))
 
 (provide 'flymake-rest-html-tidy)
 

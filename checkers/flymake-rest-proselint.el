@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-enumerate))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-proselint "flymake-rest-proselint")
-(flymake-rest-define flymake-rest-proselint
+(flymake-rest-define-enumerate flymake-rest-proselint
   "Flymake checker using Proselint.
 
 See URL `http://proselint.com/'."
@@ -40,25 +39,23 @@ See URL `http://proselint.com/'."
                (error "Cannot find proselint executable"))
   :write-type 'pipe
   :command `(,proselint-exec "--json" "-")
-  :error-parser
-  (flymake-rest-parse-enumerate
-      (alist-get 'errors
-       (alist-get 'data
-        (car
-         (flymake-rest-parse-json
-          (buffer-substring-no-properties
-           (point-min) (point-max))))))
-    (let-alist it
-      ;; (cons (car (flymake-diag-region flymake-rest-source .line .column))
-      ;;       (cdr (flymake-diag-region flymake-rest-source .endLine .endColumn)))
-      (list flymake-rest-source
-            .start
-            .end
-            (pcase .severity
-              ("suggestion" :note)
-              ("warning" :warning)
-              ((or "error" _) :error))
-            (concat (propertize .check 'face 'flymake-rest-diag-id) " " .message)))))
+  :generator
+  (alist-get 'errors
+   (alist-get 'data
+    (car
+     (flymake-rest-parse-json
+      (buffer-substring-no-properties
+       (point-min) (point-max))))))
+  :enumerate-parser
+  (let-alist it
+    (list flymake-rest-source
+          .start
+          .end
+          (pcase .severity
+            ("suggestion" :note)
+            ("warning" :warning)
+            ((or "error" _) :error))
+          (concat (propertize .check 'face 'flymake-rest-diag-id) " " .message))))
 
 (provide 'flymake-rest-proselint)
 

@@ -26,8 +26,7 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 (defcustom flymake-rest-markdownlint-style nil
   "Path to the style config for markdownlint."
@@ -35,7 +34,7 @@
   :group 'flymake-rest)
 
 ;;;###autoload (autoload 'flymake-rest-markdownlint "flymake-rest-markdownlint")
-(flymake-rest-define flymake-rest-markdownlint
+(flymake-rest-define-rx flymake-rest-markdownlint
   "Markdown checker using mdl.
 
 See URL `https://github.com/markdownlint/markdownlint'."
@@ -47,9 +46,8 @@ See URL `https://github.com/markdownlint/markdownlint'."
   :command `(,mdl-exec
              ,@(and flymake-rest-markdownlint-style
                     `("--style" ,flymake-rest-markdownlint-style)))
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error bol "(stdin):" line ": " (id "MD" (+ digit)) " " (message) eol))))
+  :regexps
+  ((error bol "(stdin):" line ": " (id "MD" (+ digit)) " " (message) eol)))
 
 (provide 'flymake-rest-markdownlint)
 

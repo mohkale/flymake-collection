@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-awk-gawk "flymake-rest-awk-gawk")
-(flymake-rest-define flymake-rest-awk-gawk
+(flymake-rest-define-rx flymake-rest-awk-gawk
   "GNU awk's built-in --lint checker."
   :title "gawk-awk"
   :pre-let ((gawk-exec (executable-find "gawk")))
@@ -39,14 +38,13 @@
   :write-type 'pipe
   :command (list gawk-exec
                  ;; Avoid code execution.  See https://github.com/w0rp/ale/pull/1411
-                 "--source" "'BEGIN{exit} END{exit 1}'"
+                 "--source" "BEGIN{exit} END{exit 0}"
                  "-f" "-"
                  "--lint"
                  null-device)
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error   bol (? "g") "awk: -:" line ": " (or "fatal" "error") ": " (message) eol)
-    (warning bol (? "g") "awk: -:" line ": " "warning"            ": " (message) eol))))
+  :regexps
+  ((error   bol (? "g") "awk: -:" line ": " (or "fatal" "error") ": " (message) eol)
+   (warning bol (? "g") "awk: -:" line ": " "warning"            ": " (message) eol)))
 
 (provide 'flymake-rest-awk-gawk)
 

@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-mypy "flymake-rest-mypy")
-(flymake-rest-define flymake-rest-mypy
+(flymake-rest-define-rx flymake-rest-mypy
   "Mypy syntax and type checker.  Requires mypy>=0.580.
 
 See URL `http://mypy-lang.org/'."
@@ -47,11 +46,10 @@ See URL `http://mypy-lang.org/'."
                  "--show-absolute-path"
                  "--show-error-codes"
                  flymake-rest-temp-file)
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error   bol (file-name) ":" line ":" column ": error: "   (message) eol)
-    (warning bol (file-name) ":" line ":" column ": warning: " (message) eol)
-    (note    bol (file-name) ":" line ":" column ": note: "    (message) eol))))
+  :regexps
+  ((error   bol (file-name) ":" line ":" column ": error: "   (message) eol)
+   (warning bol (file-name) ":" line ":" column ": warning: " (message) eol)
+   (note    bol (file-name) ":" line ":" column ": note: "    (message) eol)))
 
 (provide 'flymake-rest-mypy)
 

@@ -26,11 +26,15 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-enumerate))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-pylint "flymake-rest-pylint")
-(flymake-rest-define flymake-rest-pylint
+(flymake-rest-define-enumerate flymake-rest-pylint
+  "A Python syntax and style checker using Pylint.
+
+This syntax checker requires Pylint 1.0 or newer.
+
+See URL `https://www.pylint.org/'."
   :title "pylint"
   :pre-let ((python-exec (executable-find "python3"))
             (pylint-exec (executable-find "pylint"))
@@ -49,23 +53,23 @@
                  "--output-format=json"
                  "--from-stdin"
                  file-name)
-  :error-parser
-  (flymake-rest-parse-enumerate
-      (car
-       (flymake-rest-parse-json
-        (buffer-substring-no-properties
-         (point-min) (point-max))))
-    (let-alist it
-      (let ((loc (flymake-diag-region flymake-rest-source .line .column)))
-        (list flymake-rest-source
-              (car loc)
-              (cdr loc)
-              (pcase .type
-                ;; See "pylint/utils.py"
-                ((or "fatal" "error") :error)
-                ((or "warning" "refactor" "convention") :warning)
-                ((or "info" _) :note))
-              (concat (propertize .message-id 'face 'flymake-rest-diag-id) " " .message))))))
+  :generator
+  (car
+   (flymake-rest-parse-json
+    (buffer-substring-no-properties
+     (point-min) (point-max))))
+  :enumerate-parser
+  (let-alist it
+    (let ((loc (flymake-diag-region flymake-rest-source .line .column)))
+      (list flymake-rest-source
+            (car loc)
+            (cdr loc)
+            (pcase .type
+              ;; See "pylint/utils.py"
+              ((or "fatal" "error") :error)
+              ((or "warning" "refactor" "convention") :warning)
+              ((or "info" _) :note))
+            (concat (propertize .message-id 'face 'flymake-rest-diag-id) " " .message)))))
 
 (provide 'flymake-rest-pylint)
 

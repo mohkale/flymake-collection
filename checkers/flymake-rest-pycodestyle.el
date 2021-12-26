@@ -26,11 +26,13 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-pycodestyle "flymake-rest-pycodestyle")
-(flymake-rest-define flymake-rest-pycodestyle
+(flymake-rest-define-rx flymake-rest-pycodestyle
+  "Python style guide checker.
+
+See URL `https://github.com/PyCQA/pycodestyle'."
   :title "pycodestyle"
   :pre-let ((pycodestyle-exec (executable-find "pycodestyle")))
   :pre-check
@@ -39,9 +41,8 @@
   :write-type 'file
   :source-inplace t
   :command (list pycodestyle-exec flymake-rest-temp-file)
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error bol (file-name) ":" line ":" column ": " (id (or "E" "W") (one-or-more digit)) " " (message) eol))))
+  :regexps
+  ((error bol (file-name) ":" line ":" column ": " (id (or "E" "W") (one-or-more digit)) " " (message) eol)))
 
 (provide 'flymake-rest-pycodestyle)
 

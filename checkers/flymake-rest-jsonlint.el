@@ -26,11 +26,10 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 ;;;###autoload (autoload 'flymake-rest-jsonlint "flymake-rest-jsonlint")
-(flymake-rest-define flymake-rest-jsonlint
+(flymake-rest-define-rx flymake-rest-jsonlint
   "A JSON syntax and style checker using jsonlint.
 
 See URL `https://github.com/zaach/jsonlint'."
@@ -40,11 +39,9 @@ See URL `https://github.com/zaach/jsonlint'."
                (error "Cannot find jsonlint executable"))
   :write-type 'file
   :command (list jsonlint-exec "-c" "-q" flymake-rest-temp-file)
-  :error-parser
-  (flymake-rest-parse-rx
-   ((error bol (file-name) ": line " line ", col " column ", " (message) eol))))
+  :regexps
+  ((error bol (file-name) ": line " line ", col " column ", " (message) eol)))
 
 (provide 'flymake-rest-jsonlint)
-
 
 ;;; flymake-rest-jsonlint.el ends here

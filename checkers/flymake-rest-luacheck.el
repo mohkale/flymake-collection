@@ -26,8 +26,7 @@
 (require 'flymake-rest)
 
 (eval-when-compile
-  (require 'flymake-rest-define)
-  (require 'flymake-rest-parse-rx))
+  (require 'flymake-rest-define))
 
 (defcustom flymake-rest-luacheck-standards nil
   "The standards to use in luacheck.
@@ -47,7 +46,7 @@ non-nil, pass the standards via one or more `--std' options."
   :group 'flymake-rest)
 
 ;;;###autoload (autoload 'flymake-rest-luacheck "flymake-rest-luacheck")
-(flymake-rest-define flymake-rest-luacheck
+(flymake-rest-define-rx flymake-rest-luacheck
   "A Lua syntax checker using luacheck.
 
 See URL `https://github.com/mpeterv/luacheck'."
@@ -68,11 +67,10 @@ See URL `https://github.com/mpeterv/luacheck'."
              ,@(when-let ((file (buffer-file-name flymake-rest-source)))
                  (list "--filename" file))
              "-")
-  :error-parser
-  (flymake-rest-parse-rx
-   ;; NOTE: `luacheck' before 0.11.0 did not output codes for errors, hence the ID is optional in the error pattern.
-   ((warning bol (optional (file-name)) ":" line ":" column ":"           " (" (id "W" (one-or-more digit)) ") "  (message) eol)
-    (error   bol (optional (file-name)) ":" line ":" column ":" (optional " (" (id "E" (one-or-more digit)) ") ") (message) eol))))
+  :regexps
+  ;; NOTE: `luacheck' before 0.11.0 did not output codes for errors, hence the ID is optional in the error pattern.
+  ((warning bol (optional (file-name)) ":" line ":" column ":"           " (" (id "W" (one-or-more digit)) ") "  (message) eol)
+   (error   bol (optional (file-name)) ":" line ":" column ":" (optional " (" (id "E" (one-or-more digit)) ") ") (message) eol)))
 
 (provide 'flymake-rest-luacheck)
 
