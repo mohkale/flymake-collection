@@ -34,7 +34,7 @@
 
 See URL `https://github.com/htacg/tidy-html5'."
   :title "tidy"
-  :pre-let ((tidy-exec (executable-find "tidy")))
+  :pre-let ((tidy-exec (flymake-rest-executable-find "tidy")))
   :pre-check (unless tidy-exec
                (error "Cannot find tidy executable"))
   :write-type 'pipe

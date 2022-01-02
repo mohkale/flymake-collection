@@ -34,7 +34,7 @@
 
 See URL `https://github.com/purcell/sqlint'."
   :title "sql-lint"
-  :pre-let ((lint-exec (executable-find "sqlint")))
+  :pre-let ((lint-exec (flymake-rest-executable-find "sqlint")))
   :pre-check (unless lint-exec
                (error "Cannot find sqlint executable"))
   :write-type 'pipe

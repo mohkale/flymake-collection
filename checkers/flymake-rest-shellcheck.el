@@ -41,7 +41,7 @@
 
 See URL `https://github.com/koalaman/shellcheck/'."
   :title "shellcheck"
-  :pre-let ((sh-exec (executable-find "shellcheck")))
+  :pre-let ((sh-exec (flymake-rest-executable-find "shellcheck")))
   :pre-check (unless sh-exec
                (error "Cannot find shellcheck executable"))
   :write-type 'pipe

@@ -39,7 +39,7 @@
 
 See URL `https://github.com/markdownlint/markdownlint'."
   :title "markdownlint"
-  :pre-let ((mdl-exec (executable-find "mdl")))
+  :pre-let ((mdl-exec (flymake-rest-executable-find "mdl")))
   :pre-check (unless mdl-exec
                (error "Cannot find mdl executable"))
   :write-type 'pipe

@@ -34,7 +34,7 @@
 
 See URL `https://github.com/zaach/jsonlint'."
   :title "jsonlint"
-  :pre-let ((jsonlint-exec (executable-find "jsonlint")))
+  :pre-let ((jsonlint-exec (flymake-rest-executable-find "jsonlint")))
   :pre-check (unless jsonlint-exec
                (error "Cannot find jsonlint executable"))
   :write-type 'file

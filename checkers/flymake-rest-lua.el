@@ -33,7 +33,7 @@
   "A Lua syntax checker using the Lua compiler.
 
 See URL `http://www.lua.org/'."
-  :pre-let ((lua-exec (executable-find "luac")))
+  :pre-let ((lua-exec (flymake-rest-executable-find "luac")))
   :pre-check (unless lua-exec
                (user-error "Cannot find lua compiler executable"))
   :write-type 'pipe

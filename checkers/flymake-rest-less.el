@@ -36,7 +36,7 @@ Requires lessc 1.4 or newer.
 
 See URL `http://lesscss.org'."
   :title "lessc"
-  :pre-let ((lessc-exec (executable-find "lessc")))
+  :pre-let ((lessc-exec (flymake-rest-executable-find "lessc")))
   :pre-check (unless lessc-exec
                (error "Cannot find lessc executable"))
   :write-type 'pipe

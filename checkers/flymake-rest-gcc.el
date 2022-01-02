@@ -44,7 +44,7 @@
 
 Requires GCC 4.4 or newer.  See URL `https://gcc.gnu.org/'."
   :title "gcc"
-  :pre-let ((gcc-exec (executable-find "gcc")))
+  :pre-let ((gcc-exec (flymake-rest-executable-find "gcc")))
   :pre-check (unless gcc-exec
                (error "Cannot find gcc executable"))
   :write-type 'pipe

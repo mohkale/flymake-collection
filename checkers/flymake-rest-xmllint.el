@@ -34,7 +34,7 @@
 
 The xmllint is part of libxml2, see URL `http://www.xmlsoft.org/'."
   :title "xmllint"
-  :pre-let ((xmllint-exec (executable-find "xmllint")))
+  :pre-let ((xmllint-exec (flymake-rest-executable-find "xmllint")))
   :pre-check
   (unless xmllint-exec
     (error "Cannot find xmllint executable"))

@@ -51,7 +51,7 @@ non-nil, pass the standards via one or more `--std' options."
 
 See URL `https://github.com/mpeterv/luacheck'."
   :title "luacheck"
-  :pre-let ((luacheck-exec (executable-find "luacheck")))
+  :pre-let ((luacheck-exec (flymake-rest-executable-find "luacheck")))
   :pre-check (unless luacheck-exec
                (error "Cannot find luacheck executable"))
   :write-type 'pipe

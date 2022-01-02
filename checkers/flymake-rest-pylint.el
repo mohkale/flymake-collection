@@ -36,8 +36,8 @@ This syntax checker requires Pylint 1.0 or newer.
 
 See URL `https://www.pylint.org/'."
   :title "pylint"
-  :pre-let ((python-exec (executable-find "python3"))
-            (pylint-exec (executable-find "pylint"))
+  :pre-let ((python-exec (flymake-rest-executable-find "python3"))
+            (pylint-exec (flymake-rest-executable-find "pylint"))
             (file-name (or (buffer-file-name flymake-rest-source)
                            "_")))
   :pre-check

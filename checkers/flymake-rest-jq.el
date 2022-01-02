@@ -37,7 +37,7 @@ single input, which is useful for jsonlines data.
 
 See URL `https://stedolan.github.io/jq/'."
   :title "jq"
-  :pre-let ((jq-exec (executable-find "jq")))
+  :pre-let ((jq-exec (flymake-rest-executable-find "jq")))
   :pre-check (unless jq-exec
                (error "Cannot find jq executable"))
   :write-type 'pipe

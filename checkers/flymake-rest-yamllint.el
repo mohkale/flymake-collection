@@ -33,7 +33,7 @@
 
 See URL `https://github.com/adrienverge/yamllint'."
   :title "yamllint"
-  :pre-let ((yamllint-exec (executable-find "yamllint")))
+  :pre-let ((yamllint-exec (flymake-rest-executable-find "yamllint")))
   :pre-check (unless yamllint-exec
                (error "Cannot find yamllint executable"))
   :write-type 'pipe

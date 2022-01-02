@@ -34,7 +34,7 @@
 
 See URL `https://github.com/PyCQA/pycodestyle'."
   :title "pycodestyle"
-  :pre-let ((pycodestyle-exec (executable-find "pycodestyle")))
+  :pre-let ((pycodestyle-exec (flymake-rest-executable-find "pycodestyle")))
   :pre-check
   (unless pycodestyle-exec
     (error "Cannot find pycodestyle executable"))

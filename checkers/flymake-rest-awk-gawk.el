@@ -32,7 +32,7 @@
 (flymake-rest-define-rx flymake-rest-awk-gawk
   "GNU awk's built-in --lint checker."
   :title "gawk-awk"
-  :pre-let ((gawk-exec (executable-find "gawk")))
+  :pre-let ((gawk-exec (flymake-rest-executable-find "gawk")))
   :pre-check (unless gawk-exec
                (error "Cannot find gawk executable"))
   :write-type 'pipe

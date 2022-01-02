@@ -41,7 +41,7 @@
 
 See URL `http://clang.llvm.org/'."
   :title "clang"
-  :pre-let ((clang-exec (executable-find "clang")))
+  :pre-let ((clang-exec (flymake-rest-executable-find "clang")))
   :pre-check (unless clang-exec
                (error "Cannot find clang executable"))
   :write-type 'pipe

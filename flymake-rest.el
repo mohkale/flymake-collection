@@ -80,6 +80,16 @@ like output from OUTPUT into a list and then returns it."
         (forward-line)))
     objects))
 
+(defcustom flymake-rest-remote-algorithm
+  'local
+  "How `flymake-rest' should handle remote files and buffers."
+  :type '(choice (const :tag "Run the checker on the local machine" local)
+                 (const :tag "Run the checker on the remote machine" remote)
+                 (const :tag "Disable syntax checks on remote files" cancel)))
+
+(defun flymake-rest-executable-find (command)
+  (executable-find command (eq flymake-rest-remote-algorithm 'remote)))
+
 (provide 'flymake-rest)
 
 ;;; flymake-rest.el ends here

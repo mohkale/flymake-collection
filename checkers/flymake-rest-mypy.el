@@ -34,7 +34,7 @@
 
 See URL `http://mypy-lang.org/'."
   :title "mypy"
-  :pre-let ((mypy-exec (executable-find "mypy")))
+  :pre-let ((mypy-exec (flymake-rest-executable-find "mypy")))
   :pre-check (unless mypy-exec
                (error "Cannot find mypy executable"))
   :write-type 'file

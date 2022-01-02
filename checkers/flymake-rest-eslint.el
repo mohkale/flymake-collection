@@ -34,7 +34,7 @@
 
 See URL `https://eslint.org/'."
   :title "eslint"
-  :pre-let ((eslint-exec (executable-find "eslint")))
+  :pre-let ((eslint-exec (flymake-rest-executable-find "eslint")))
   :pre-check (unless eslint-exec
                (error "Cannot find eslint executable"))
   :write-type 'pipe

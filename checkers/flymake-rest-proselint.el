@@ -34,7 +34,7 @@
 
 See URL `http://proselint.com/'."
   :title "proselint"
-  :pre-let ((proselint-exec (executable-find "proselint")))
+  :pre-let ((proselint-exec (flymake-rest-executable-find "proselint")))
   :pre-check (unless proselint-exec
                (error "Cannot find proselint executable"))
   :write-type 'pipe

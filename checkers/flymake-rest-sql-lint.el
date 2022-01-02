@@ -42,7 +42,7 @@
 
 See URL `https://github.com/joereynolds/sql-lint'."
   :title "sql-lint"
-  :pre-let ((lint-exec (executable-find "sql-lint")))
+  :pre-let ((lint-exec (flymake-rest-executable-find "sql-lint")))
   :pre-check (unless lint-exec
                (error "Cannot find sql-lint executable"))
   :write-type 'pipe

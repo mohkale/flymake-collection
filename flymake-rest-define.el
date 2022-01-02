@@ -58,31 +58,40 @@ killed and replaced with the new check.")
 
 ;;; `flymake-rest-define'
 
-(defun flymake-rest-define--temp-file (temp-dir temp-file source-inplace)
+(defun flymake-rest-define--temp-file
+    (temp-dir-path temp-dir temp-file temp-file-path
+                   source-inplace remote-p)
   "Let forms for defining a temporary directory and file.
 TEMP-DIR and TEMP-FILE are the symbols used for the corresponding variables.
 SOURCE-INPLACE specifies whether the TEMP-DIR should be in the same working
-directory as the current buffer."
+directory as the current buffer. REMOTE-P is the result of `file-remote-p'
+on the current buffer/file. TEMP-DIR-PATH and TEMP-FILE-PATH are variants
+of TEMP-DIR and TEMP-FILE which remove any tramp prefixes or paths."
   `((,temp-dir
      ,@(let ((forms
               (append
+               `((when (and ,remote-p
+                            (eq flymake-rest-remote-algorithm 'local))
+                   (error "Cannot run checker using :write-type 'file on remote \
+machine locally")))
                (when source-inplace
-                 '((when-let ((dir (or (when-let ((file (buffer-file-name)))
+                 `((when-let ((dir (or (when-let ((file (buffer-file-name)))
                                          (file-name-directory file))
                                        default-directory)))
                      (unless (file-exists-p dir)
-                       (error "Checker needs to be run in the cwd, but the cwd \
-doesn't exist: %s" dir))
+                       (error "`default-directory' for checker doesn't exist %s" dir))
                      dir)))
                '((make-temp-file "flymake-" t)))))
          (if (> (length forms) 1)
              `((or ,@forms))
            forms)))
+    (,temp-dir-path (substring ,temp-dir (length ,remote-p)))
     (,temp-file
-     (let ((temporary-file-directory ,temp-dir)
-           (basename (file-name-nondirectory (or (buffer-file-name)
-                                                 (buffer-name)))))
-       (make-temp-file ".flymake_" nil (concat "_" basename))))))
+     (let* ((temporary-file-directory ,temp-dir)
+            (basename (file-name-nondirectory (or (buffer-file-name)
+                                                  (buffer-name)))))
+       (make-temp-file ".flymake_" nil (concat "_" basename))))
+    (,temp-file-path (substring ,temp-file (length ,remote-p)))))
 
 (defmacro flymake-rest-define--parse-diags
     (title proc-symb diags-symb current-diag-symb source-symb error-parser)
@@ -148,6 +157,9 @@ optional arguments such as PRE-LET. This includes:
   written (only if WRITE-TYPE is 'file)
 * flymake-rest-temp-dir
   The dirname of flymake-rest-temp-file.
+* flymake-rest-temp-file-tramp, flymake-rest-temp-dir-tramp
+  Variants of flymake-rest-temp-file and flymake-rest-temp-dir
+  which may still contain any TRAMP prefixes.
 
 Body Execution
 --------------
@@ -205,12 +217,15 @@ there're no more diagnostics to parse this form should evaluate to nil."
   (unless (memq write-type '(file pipe))
     (error "Invalid `:write-type' value `%s'" write-type))
 
-  (let* ((temp-dir-symb 'flymake-rest-temp-dir)
-         (temp-file-symb 'flymake-rest-temp-file)
+  (let* ((temp-dir-path-symb 'flymake-rest-temp-dir)
+         (temp-file-path-symb 'flymake-rest-temp-file)
+         (temp-dir-symb 'flymake-rest-temp-dir-tramp)
+         (temp-file-symb 'flymake-rest-temp-file-tramp)
          (proc-symb 'proc)
          (err-symb 'flymake-rest-err)
          (source-symb 'flymake-rest-source)
          (diags-symb 'diags)
+         (remote-p-symb 'remote-p)
          (current-diag-symb 'diag)
          (cleanup-form (when (eq write-type 'file)
                          (if source-inplace
@@ -224,9 +239,17 @@ there're no more diagnostics to parse this form should evaluate to nil."
     `(defun ,name (report-fn &rest _args)
        ,docstring
        (let* ((,source-symb (current-buffer))
+              (,remote-p-symb
+               (when-let ((value (and (buffer-file-name)
+                                      (file-remote-p (buffer-file-name)))))
+                 (when (eq flymake-rest-remote-algorithm 'cancel)
+                   (error "Canceling check for remote buffer due to `flymake-rest-remote-algorithm'"))
+                 value))
               ,@(when (eq write-type 'file)
                   (flymake-rest-define--temp-file
-                   temp-dir-symb temp-file-symb source-inplace))
+                   temp-dir-symb temp-dir-path-symb
+                   temp-file-symb temp-file-path-symb
+                   source-inplace remote-p-symb))
               ,@pre-let)
          ;; With vars defined, do pre-check.
          ,@(when pre-check
@@ -250,6 +273,8 @@ there're no more diagnostics to parse this form should evaluate to nil."
               (make-process
                :name ,(concat (symbol-name name) "-flymake")
                :noquery t
+               :file-handler (and ,remote-p-symb
+                                  (eq flymake-rest-remote-algorithm 'remote))
                :connection-type 'pipe
                :buffer (generate-new-buffer
                         ,(concat " *" (symbol-name name) "-flymake*"))
