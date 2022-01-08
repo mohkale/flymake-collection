@@ -20,6 +20,10 @@
 ;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;; SOFTWARE.
 
+;;; Commentary:
+
+;; `flymake' syntax checker for lua using luacheck.
+
 ;;; Code:
 
 (require 'flymake)
@@ -39,7 +43,7 @@ non-nil, pass the standards via one or more `--std' options."
                          (string :tag "Standard name")))
   :group 'flymake-rest)
 
-(defcustom flymake-luacheck-rc nil ; ".luacheckrc"
+(defcustom flymake-rest-luacheck-rc nil ; ".luacheckrc"
   "Optional configuration file for luacheck."
   :type '(choice (const :tag "Default" nil)
                  (file :tag "Config file"))
@@ -62,8 +66,8 @@ See URL `https://github.com/mpeterv/luacheck'."
              ,@(when flymake-rest-luacheck-standards
                  (list "--std"
                        (mapconcat #'identity flymake-rest-luacheck-standards "+")))
-             ,@(when flymake-luacheck-rc
-                 (list "--config" flymake-luacheck-rc))
+             ,@(when flymake-rest-luacheck-rc
+                 (list "--config" flymake-rest-luacheck-rc))
              ,@(when-let ((file (buffer-file-name flymake-rest-source)))
                  (list "--filename" file))
              "-")

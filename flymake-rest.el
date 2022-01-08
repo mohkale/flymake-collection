@@ -6,7 +6,7 @@
 ;; Created: 15 June 2021
 ;; Homepage: https://github.com/mohkale/flymake-rest
 ;; Keywords: language tools
-;; Package-Requires: ((emacs "28.1") (let-alist "1.0") (flymake-rest "1.2.1))
+;; Package-Requires: ((emacs "28.1") (let-alist "1.0") (flymake "1.2.1"))
 ;; SPDX-License-Identifier: MIT
 ;; Version: 1.0.0
 
@@ -68,6 +68,7 @@ like output from OUTPUT into a list and then returns it."
   (let (objects
         (json-array-type 'list)
         (json-false nil))
+    (ignore json-array-type json-false)
     (with-temp-buffer
       (insert output)
       (goto-char (point-min))

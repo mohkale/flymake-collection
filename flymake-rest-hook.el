@@ -20,8 +20,10 @@
 ;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;; SOFTWARE.
 
-;;; Commentary
-;; This file implements a way to associate major-modes to flymake checkers.
+;;; Commentary:
+
+;; This file implements a way to associate major-modes with flymake checkers.
+;; This can be used to automatically enable certain checkers on certain modes.
 
 ;;; Code:
 

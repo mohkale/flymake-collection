@@ -165,7 +165,7 @@ of the `current-buffer'. The variable flymake-rest-temp-file and
 flymake-rest-temp-dir will be bound in the body of NAME and provide
 access to this temp-file.
 When set to 'pipe, all of the `current-buffer' will be passed to the
-process on its standard-input stream after it has begun.
+process on its standard input stream after it has begun.
 
 SOURCE-INPLACE determines whether to also create a temporary directory
 for a temporary file (when using a WRITE-TYPE of 'file) or whether to
@@ -308,7 +308,7 @@ exit status %d\nStderr: %s"
 (eval-when-compile
   (require 'rx))
 
-(defconst flymake-rest-parse-rx-constituents
+(defconst flymake-rest-define-parse-rx-constituents
   `((file-name ,(lambda (body)
                   (rx-to-string
                    `(group-n 1 ,@(or (cdr body)
@@ -345,7 +345,7 @@ turned into a keyword by this macro) and the cdr should be a
 sequence of entries that can be interpreted by the `rx' macro.
 To simplify matching specific fields in the parsed output several
 helper extensions to `rx' have been defined such as file-name or
-line. For a list of these see `flymake-rest-parse-rx-constituents'.
+line. For a list of these see `flymake-rest-define-parse-rx-constituents'.
 The only required fields that MUST be parsed are the line number
 and message. If these are ommited the matched diagnostic will be
 skipped.
@@ -359,7 +359,7 @@ For an example of this macro in action, see `flymake-rest-pycodestyle'."
   (unless (> (length regexps) 0)
     (error "Must supply at least one regexp for error, warning or note"))
 
-  (let* ((group-count (length flymake-rest-parse-rx-constituents))
+  (let* ((group-count (length flymake-rest-define-parse-rx-constituents))
          (regexps
           ;; To avoid having to rematch each diagnostic more than once we append
           ;; a special extra capture group (greater than all the ones above) that
@@ -371,7 +371,7 @@ For an example of this macro in action, see `flymake-rest-pycodestyle'."
                    collect (cons `(seq ,@regex (group-n ,count ""))
                                  (intern (concat ":" (symbol-name severity))))))
          (combined-regex
-          (let ((rx-constituents (append flymake-rest-parse-rx-constituents
+          (let ((rx-constituents (append flymake-rest-define-parse-rx-constituents
                                          (bound-and-true-p rx-constituents) nil)))
             (rx-to-string `(or ,@(mapcar #'car regexps))
                           'no-group)))
@@ -467,7 +467,10 @@ output again and again.
 
 The value of the current entry from GENERATOR in ENUMERATE-PARSER will be set to
 the variable `it'. ENUMERATE-PARSER should evaluate to a form that can be passed
-to `flymake-make-diagnostic'."
+to `flymake-make-diagnostic'.
+
+See `flymake-rest-define' for a description of NAME, DOCSTRING, TITLE, COMMAND,
+WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
   (declare (indent defun) (doc-string 2))
   (let ((entries-var 'flymake-rest-entries)
         (parsed-var 'flymake-rest-parsed))

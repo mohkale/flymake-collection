@@ -20,6 +20,10 @@
 ;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;; SOFTWARE.
 
+;;; Commentary:
+
+;; `flymake' syntax and style checker for HTML using Tidy.
+
 ;;; Code:
 
 (require 'flymake)

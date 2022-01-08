@@ -20,6 +20,11 @@
 ;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;; SOFTWARE.
 
+;;; Commentary:
+
+;; This file exposes a bunch of helper commands for using and configuring flymake
+;; interactively.
+
 ;;; Code:
 
 (require 'flymake)
@@ -49,6 +54,8 @@ they aren't associated with the current mode."
      :test (lambda (a b) (string-equal (car a) (car b))))))
 
 (defun flymake-rest-change-checker--read-checkers (&optional all-modes)
+  "Read one or more flymake checkers.
+See `flymake-rest-change-checker--cands' for a description of ALL-MODES."
   (let* ((cands (flymake-rest-change-checker--cands all-modes))
          (group-function (lambda (cand transform)
                            (if transform
@@ -75,9 +82,11 @@ they aren't associated with the current mode."
 
 ;;;###autoload
 (defun flymake-rest-change-checker (checkers)
-  "Interactively select and enable/disable checker for the current `major-mode'.
-With ARG select a checker regardless of `major-mode'."
-  (interactive (list (flymake-rest-change-checker--read-checkers current-prefix-arg)))
+  "Interactively enable/disable flymake CHECKERS.
+With `current-prefix-arg' select a checker regardless of `major-mode'."
+  (interactive
+   (list
+    (flymake-rest-change-checker--read-checkers current-prefix-arg)))
   (when checkers
     (dolist (checker checkers)
       (cl-destructuring-bind (_cand _mode checker exists) checker

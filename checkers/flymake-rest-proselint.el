@@ -20,6 +20,10 @@
 ;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;; SOFTWARE.
 
+;;; Commentary:
+
+;; `flymake' syntax checker for prose using proselint.
+
 ;;; Code:
 
 (require 'flymake)
