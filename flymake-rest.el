@@ -6,7 +6,7 @@
 ;; Created: 15 June 2021
 ;; Homepage: https://github.com/mohkale/flymake-rest
 ;; Keywords: language tools
-;; Package-Requires: ((emacs "27.1") (let-alist "1.0"))
+;; Package-Requires: ((emacs "28.1") (let-alist "1.0") (flymake-rest "1.2.1))
 ;; SPDX-License-Identifier: MIT
 ;; Version: 1.0.0
 

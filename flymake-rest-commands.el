@@ -26,25 +26,27 @@
 (require 'flymake-rest-hook)
 
 (defun flymake-rest-change-checker--cands (all-modes)
-  (cl-remove-duplicates
-   (cl-loop for (mode . checkers) in
-            (if all-modes
-                flymake-rest-config
-              (list (assoc major-mode flymake-rest-config)))
-            append
-            (cl-loop for it in checkers
-                     with checker = nil
-                     do (setq checker (if (symbolp it)
-                                          it
-                                        (car it)))
-                     with exists = nil
-                     do (setq exists (or (member checker flymake-diagnostic-functions)
-                                         (when-let ((state (gethash checker flymake--backend-state)))
-                                           (not (flymake--backend-state-disabled state)))))
-                     when checker
-                     collect (list (symbol-name checker)
-                                   mode checker exists)))
-   :test (lambda (a b) (string-equal (car a) (car b)))))
+  "Candidates for `flymake-rest-change-checker'.
+With ALL-MODES fetch all registered flymake checkers even when
+they aren't associated with the current mode."
+  (let ((configured-checkers (flymake--collect #'identity)))
+    (cl-remove-duplicates
+     (cl-loop for (mode . checkers) in
+              (if all-modes
+                  flymake-rest-config
+                (list (assoc major-mode flymake-rest-config)))
+              append
+              (cl-loop for it in checkers
+                       with checker = nil
+                       do (setq checker (if (symbolp it)
+                                            it
+                                          (car it)))
+                       with exists = nil
+                       do (setq exists (member checker configured-checkers))
+                       when checker
+                         collect (list (symbol-name checker)
+                                       mode checker exists)))
+     :test (lambda (a b) (string-equal (car a) (car b))))))
 
 (defun flymake-rest-change-checker--read-checkers (&optional all-modes)
   (let* ((cands (flymake-rest-change-checker--cands all-modes))
