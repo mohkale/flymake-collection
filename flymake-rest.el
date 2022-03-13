@@ -1,4 +1,4 @@
-;;; flymake-rest.el --- Core features for flymake-rest -*- lexical-binding: t -*-
+;;; flymake-rest.el --- Core features for flymake -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2021 Mohsin Kaleem
 

@@ -1,8 +1,9 @@
 #+TITLE: flymake-rest
+#+AUTHOR: Mohsin Kaleem
+
+#+html: <p align="right"><a href="https://melpa.org/#/flymake-rest"><img align="center" alt="MELPA" src="https://melpa.org/packages/flymake-rest-badge.svg"/></a></p>
 
 
-
-#+AUTHOR: Mohsin Kaleem
 
 Fill the gap between flymake and flycheck, one checker at a time.
 
@@ -17,7 +18,6 @@ as possible.
 - [[#installation][Installation]]
   - [[#manually][Manually]]
   - [[#from-melpa][From MELPA]]
-  - [[#straight][straight]]
   - [[#configurations][Configurations]]
 - [[#contributing][Contributing]]
 - [[#appendix][Appendix]]
@@ -29,14 +29,13 @@ as possible.
    3. Configure the package to your liking.
 
 ** From MELPA
-   TODO: Melpa support
+   This package is on [[https://github.com/melpa/melpa][MELPA]]. You can add this to your ~package-archives~ variable and
+   then install through ~M-x package-install~.
 
-** straight
-   You can also install this package through the [[https://github.com/raxod502/straight.el][straight]] package manager.
    #+begin_src emacs-lisp
-     (straight-use-package '(flymake-rest :host github
-                                          :repo "mohkale/flymake-rest"
-                                          :files ("*.el" "checkers/*.el")))
+     (push '("melpa" . "https://melpa.org/packages/") package-archives)
+     (package-refresh-contents)
+     (package-install 'flymake-rest)
    #+end_src
 
 ** Configurations
