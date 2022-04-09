@@ -1,15 +1,13 @@
-#+TITLE: flymake-rest
+#+TITLE: flymake-collection
 #+AUTHOR: Mohsin Kaleem
 
-#+html: <p align="right"><a href="https://melpa.org/#/flymake-rest"><img align="center" alt="MELPA" src="https://melpa.org/packages/flymake-rest-badge.svg"/></a></p>
+#+html: <p align="right"><a href="https://melpa.org/#/flymake-collection"><img align="center" alt="MELPA" src="https://melpa.org/packages/flymake-collection-badge.svg"/></a></p>
 
 
 
-Fill the gap between flymake and flycheck, one checker at a time.
-
-~flymake-rest~ tries to provide a comprehensive list of diagnostic-functions for use
-with flymake, give users the tools to easily define new syntax checkers and help
-selectively enable or disable diagnostic-functions based on major-modes.
+~flymake-collection~ tries to provide a comprehensive list of diagnostic-functions
+for use with flymake, give users the tools to easily define new syntax checkers and
+help selectively enable or disable diagnostic-functions based on major-modes.
 
 The goal of this project is to make the transition from flycheck to flymake as easy
 as possible.
@@ -35,7 +33,7 @@ as possible.
    #+begin_src emacs-lisp
      (push '("melpa" . "https://melpa.org/packages/") package-archives)
      (package-refresh-contents)
-     (package-install 'flymake-rest)
+     (package-install 'flymake-collection)
    #+end_src
 
 ** Configurations
@@ -48,23 +46,23 @@ as possible.
     #+begin_src emacs-lisp
       (add-hook 'python-mode-hook
                 (defun python-mode-setup-flymake ()
-                  (add-hook 'flymake-diagnostic-functions 'flymake-rest-pycodestyle nil t)
+                  (add-hook 'flymake-diagnostic-functions 'flymake-collection-pycodestyle nil t)
                   (flymake-mode +1)))
     #+end_src
 
-    For a list of supported syntax-checkers see [[file:checkers/][./checkers/]]. All of the defined
-    checkers are auto-loaded and have no other dependencies than ~flymake-rest~ so
-    once you've installed and compiled ~flymake-rest~ you can hook them into
-    flymake-diagnostic-functions without any extra configuration or loading being
+    For a list of supported syntax-checkers see [[file:src/checkers/][./src/checkers/]]. All of the defined
+    checkers are auto-loaded and have no other dependencies than ~flymake-collection~
+    so once you've installed and compiled ~flymake-collection~ you can hook them into
+    ~flymake-diagnostic-functions~ without any extra configuration or loading being
     needed.
 
 *** Associating Checkers with Major Modes
-    ~flymake-rest~ provides a special configuration variable to let you associate
+    ~flymake-collection~ provides a special configuration variable to let you associate
     diagnostic functions with major-modes. This can be useful both for automatically
     enabling diagnostic functions and for interactively toggling them based on your
     configuration.
 
-    The ~flymake-rest-config~ config variable is an alist with the ~key~ being the
+    The ~flymake-collection-config~ config variable is an alist with the ~key~ being the
     major-mode and the ~cdr~ being the list of diagnostic functions for that mode.
     Each diagnostic function can be defined as the function symbol, or an alist with
     the ~car~ of the symbol being the function symbol and the ~cdr~ being a plist of
@@ -78,12 +76,12 @@ as possible.
     #+begin_src emacs-lisp
       (push
        '(python-mode
-         flymake-rest-mypy                      ; Always added to diagnostic functions.
-         (flymake-rest-pycodestyle :disabled t) ; Never added.
-         (flymake-rest-pylint                   ; Added when predicate is true.
+         flymake-collection-mypy                      ; Always added to diagnostic functions.
+         (flymake-collection-pycodestyle :disabled t) ; Never added.
+         (flymake-collection-pylint                   ; Added when predicate is true.
           :predicate (lambda ()
                        (executable-find "pylint"))))
-       flymake-rest-config)
+       flymake-collection-config)
     #+end_src
 
     *Note*: The ~executable-find~ predicate example here is redundant, each checker will
@@ -91,38 +89,42 @@ as possible.
 
     Lastly there's also a ~use-package~ keyword you can use to define config
     entries. This is just syntax sugar over pushing these values into
-    ~flymake-rest-config~ as shown above.
+    ~flymake-collection-config~ as shown above.
 
     #+begin_src emacs-lisp
       (use-package python-mode
         :flymake-hook
         (python-mode
-         flymake-rest-mypy                      ; Always added to diagnostic functions.
-         (flymake-rest-pycodestyle :disabled t) ; Never added.
-         (flymake-rest-pylint                   ; Added when predicate is true.
+         flymake-collection-mypy                      ; Always added to diagnostic functions.
+         (flymake-collection-pycodestyle :disabled t) ; Never added.
+         (flymake-collection-pylint                   ; Added when predicate is true.
           :predicate (lambda ()
                        (executable-find "pylint"))))))
     #+end_src
 
 **** Automatically Enabling Syntax Checkers
-     To automatically enable diagnostic functions based on ~flymake-rest-config~ you
-     have to call the ~flymake-rest-hook-setup~ function.
+     To automatically enable diagnostic functions based on ~flymake-collection-config~ you
+     have to call the ~flymake-collection-hook-setup~ function.
      This can be done through ~use-package~, for example:
      #+begin_src emacs-lisp
-       (use-package flymake-rest
-         :hook (after-init . flymake-rest-hook-setup))
+       (use-package flymake-collection
+         :hook (after-init . flymake-collection-hook-setup))
      #+end_src
 
      You can also interactively enable or disable a diagnostic-function from
-     ~flymake-rest-config~ using the ~flymake-rest-change-checker~ command.
+     ~flymake-collection-config~ using the ~flymake-collection-change-checker~ command.
 
 * Contributing
   Please do!. There are more linters out there than I have the time to explore, if
   you'd like to add support for a new linter or contribute improvements to an
   existing one, we'd be more than happy to accept.
 
+  When contributing please describe the exact version of the linter you're adding and
+  supply a sample file which triggers all the different lint types (info, error,
+  warning) supported by your linter.
+
 * Appendix                                                          :ARCHIVE:
-# LocalWords: flymake
+# LocalWords: flymake linter
 
 # Local Variables:
 # eval: (toc-org-mode 1)

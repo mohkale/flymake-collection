@@ -1,4 +1,4 @@
-;;; flymake-rest-proselint.el --- Proselint diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-markdownlint.el --- Markdownlint diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,45 +22,37 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for prose using proselint.
+;; `flymake' syntax checker for markdown using markdownlint.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-proselint "flymake-rest-proselint")
-(flymake-rest-define-enumerate flymake-rest-proselint
-  "Flymake checker using Proselint.
+(defcustom flymake-collection-markdownlint-style nil
+  "Path to the style config for markdownlint."
+  :type 'string
+  :group 'flymake-collection)
 
-See URL `http://proselint.com/'."
-  :title "proselint"
-  :pre-let ((proselint-exec (executable-find "proselint")))
-  :pre-check (unless proselint-exec
-               (error "Cannot find proselint executable"))
+;;;###autoload (autoload 'flymake-collection-markdownlint "flymake-collection-markdownlint")
+(flymake-collection-define-rx flymake-collection-markdownlint
+  "Markdown checker using mdl.
+
+See URL `https://github.com/markdownlint/markdownlint'."
+  :title "markdownlint"
+  :pre-let ((mdl-exec (executable-find "mdl")))
+  :pre-check (unless mdl-exec
+               (error "Cannot find mdl executable"))
   :write-type 'pipe
-  :command `(,proselint-exec "--json" "-")
-  :generator
-  (alist-get 'errors
-   (alist-get 'data
-    (car
-     (flymake-rest-parse-json
-      (buffer-substring-no-properties
-       (point-min) (point-max))))))
-  :enumerate-parser
-  (let-alist it
-    (list flymake-rest-source
-          .start
-          .end
-          (pcase .severity
-            ("suggestion" :note)
-            ("warning" :warning)
-            ((or "error" _) :error))
-          (concat (propertize .check 'face 'flymake-rest-diag-id) " " .message))))
+  :command `(,mdl-exec
+             ,@(and flymake-collection-markdownlint-style
+                    `("--style" ,flymake-collection-markdownlint-style)))
+  :regexps
+  ((error bol "(stdin):" line ": " (id "MD" (+ digit)) " " (message) eol)))
 
-(provide 'flymake-rest-proselint)
+(provide 'flymake-collection-markdownlint)
 
-;;; flymake-rest-proselint.el ends here
+;;; flymake-collection-markdownlint.el ends here

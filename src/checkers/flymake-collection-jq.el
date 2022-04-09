@@ -1,4 +1,4 @@
-;;; flymake-rest-jsonlint.el --- JSONLint diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-jq.el --- jq diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,30 +22,33 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for JSON using jsonlint.
+;; `flymake' syntax checker for JSON using jq.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-jsonlint "flymake-rest-jsonlint")
-(flymake-rest-define-rx flymake-rest-jsonlint
-  "A JSON syntax and style checker using jsonlint.
+;;;###autoload (autoload 'flymake-collection-jq "flymake-collection-jq")
+(flymake-collection-define-rx flymake-collection-jq
+  "JSON checker using the jq tool.
 
-See URL `https://github.com/zaach/jsonlint'."
-  :title "jsonlint"
-  :pre-let ((jsonlint-exec (executable-find "jsonlint")))
-  :pre-check (unless jsonlint-exec
-               (error "Cannot find jsonlint executable"))
-  :write-type 'file
-  :command (list jsonlint-exec "-c" "-q" flymake-rest-temp-file)
+This checker accepts multiple consecutive JSON values in a
+single input, which is useful for jsonlines data.
+
+See URL `https://stedolan.github.io/jq/'."
+  :title "jq"
+  :pre-let ((jq-exec (executable-find "jq")))
+  :pre-check (unless jq-exec
+               (error "Cannot find jq executable"))
+  :write-type 'pipe
+  :command (list jq-exec "." "-" null-device)
   :regexps
-  ((error bol (file-name) ": line " line ", col " column ", " (message) eol)))
+  ((error bol "parse error: " (message) " at line " line ", column " column eol)))
 
-(provide 'flymake-rest-jsonlint)
+(provide 'flymake-collection-jq)
 
-;;; flymake-rest-jsonlint.el ends here
+;;; flymake-collection-jq.el ends here

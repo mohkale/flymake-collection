@@ -1,4 +1,4 @@
-;;; flymake-rest-html-tidy.el --- Tidy-HTML5 diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-lua.el --- lua diagnostic function using the lua compiler -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,31 +22,32 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax and style checker for HTML using Tidy.
+;; `flymake' syntax checker for lua using the lua compiler.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-html-tidy "flymake-rest-html-tidy")
-(flymake-rest-define-rx flymake-rest-html-tidy
-  "A HTML syntax and style checker using Tidy.
+;;;###autoload (autoload 'flymake-collection-lua "flymake-collection-lua")
+(flymake-collection-define-rx flymake-collection-lua
+  "A Lua syntax checker using the Lua compiler.
 
-See URL `https://github.com/htacg/tidy-html5'."
-  :title "tidy"
-  :pre-let ((tidy-exec (executable-find "tidy")))
-  :pre-check (unless tidy-exec
-               (error "Cannot find tidy executable"))
+See URL `http://www.lua.org/'."
+  :pre-let ((lua-exec (executable-find "luac")))
+  :pre-check (unless lua-exec
+               (user-error "Cannot find lua compiler executable"))
   :write-type 'pipe
-  :command `(,tidy-exec "-lang" "en" "-e" "-q")
+  :command `(,lua-exec "-p" "-")
   :regexps
-  ((error   bol "line " line " column " column " - Error: "   (message) eol)
-   (warning bol "line " line " column " column " - Warning: " (message) eol)))
+  ((error bol
+          ;; Skip the name of the luac executable.
+          (minimal-match (zero-or-more not-newline))
+          ": stdin:" line ": " (message) eol)))
 
-(provide 'flymake-rest-html-tidy)
+(provide 'flymake-collection-lua)
 
-;;; flymake-rest-html-tidy.el ends here
+;;; flymake-collection-lua.el ends here

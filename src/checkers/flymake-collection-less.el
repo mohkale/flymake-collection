@@ -1,4 +1,4 @@
-;;; flymake-rest-sql-lint.el --- SQL diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-less.el --- Less diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,40 +22,33 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for sql using sql-lint.
+;; `flymake' syntax checker for LESS using the less compiler.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-(defcustom flymake-rest-sql-lint-driver nil
-  "The SQL driver to pass to sql-lint."
-  :type '(choice
-           (const :tag "Default" nil)
-           (const :tag "MySQL" "mysql")
-           (const :tag "PostgreSQL" "postgres"))
-  :group 'flymake-rest)
+;;;###autoload (autoload 'flymake-collection-less "flymake-collection-less")
+(flymake-collection-define-rx flymake-collection-less
+  "A LESS syntax checker using lessc.
 
-;;;###autoload (autoload 'flymake-rest-sql-lint "flymake-rest-sql-lint")
-(flymake-rest-define-rx flymake-rest-sql-lint
-  "A SQL syntax checker using the sql-lint tool.
+Requires lessc 1.4 or newer.
 
-See URL `https://github.com/joereynolds/sql-lint'."
-  :title "sql-lint"
-  :pre-let ((lint-exec (executable-find "sql-lint")))
-  :pre-check (unless lint-exec
-               (error "Cannot find sql-lint executable"))
+See URL `http://lesscss.org'."
+  :title "lessc"
+  :pre-let ((lessc-exec (executable-find "lessc")))
+  :pre-check (unless lessc-exec
+               (error "Cannot find lessc executable"))
   :write-type 'pipe
-  :command `(,lint-exec
-             ,@(when flymake-rest-sql-lint-driver
-                 `("--driver" ,flymake-rest-sql-lint-driver)))
+  :command (list lessc-exec  "--lint" "--no-color" "-")
   :regexps
-  ((warning bol "stdin:" line " [sql-lint: " (id (one-or-more (any alnum "-"))) "] " (message) eol)))
+  ((error bol (+ not-newline) ": " (message) " in - on line " line ", column " column ":" eol)))
 
-(provide 'flymake-rest-sql-lint)
+(provide 'flymake-collection-less)
 
-;;; flymake-rest-sql-lint.el ends here
+
+;;; flymake-collection-less.el ends here

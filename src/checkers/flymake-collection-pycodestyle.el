@@ -1,4 +1,4 @@
-;;; flymake-rest-jq.el --- jq diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-pycodestyle.el --- Pycodestyle diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,33 +22,32 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for JSON using jq.
+;; `flymake' syntax checker for python using pycodestyle.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-jq "flymake-rest-jq")
-(flymake-rest-define-rx flymake-rest-jq
-  "JSON checker using the jq tool.
+;;;###autoload (autoload 'flymake-collection-pycodestyle "flymake-collection-pycodestyle")
+(flymake-collection-define-rx flymake-collection-pycodestyle
+  "Python style guide checker.
 
-This checker accepts multiple consecutive JSON values in a
-single input, which is useful for jsonlines data.
-
-See URL `https://stedolan.github.io/jq/'."
-  :title "jq"
-  :pre-let ((jq-exec (executable-find "jq")))
-  :pre-check (unless jq-exec
-               (error "Cannot find jq executable"))
-  :write-type 'pipe
-  :command (list jq-exec "." "-" null-device)
+See URL `https://github.com/PyCQA/pycodestyle'."
+  :title "pycodestyle"
+  :pre-let ((pycodestyle-exec (executable-find "pycodestyle")))
+  :pre-check
+  (unless pycodestyle-exec
+    (error "Cannot find pycodestyle executable"))
+  :write-type 'file
+  :source-inplace t
+  :command (list pycodestyle-exec flymake-collection-temp-file)
   :regexps
-  ((error bol "parse error: " (message) " at line " line ", column " column eol)))
+  ((error bol (file-name) ":" line ":" column ": " (id (or "E" "W") (one-or-more digit)) " " (message) eol)))
 
-(provide 'flymake-rest-jq)
+(provide 'flymake-collection-pycodestyle)
 
-;;; flymake-rest-jq.el ends here
+;;; flymake-collection-pycodestyle.el ends here

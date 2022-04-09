@@ -1,4 +1,4 @@
-;;; flymake-rest-less.el --- Less diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-awk-gawk.el --- awk/gawk diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,33 +22,34 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for LESS using the less compiler.
+;; `flymake' syntax checker for awk using GNU awk's built-in lint checker.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-less "flymake-rest-less")
-(flymake-rest-define-rx flymake-rest-less
-  "A LESS syntax checker using lessc.
-
-Requires lessc 1.4 or newer.
-
-See URL `http://lesscss.org'."
-  :title "lessc"
-  :pre-let ((lessc-exec (executable-find "lessc")))
-  :pre-check (unless lessc-exec
-               (error "Cannot find lessc executable"))
+;;;###autoload (autoload 'flymake-collection-awk-gawk "flymake-collection-awk-gawk")
+(flymake-collection-define-rx flymake-collection-awk-gawk
+  "GNU awk's built-in --lint checker."
+  :title "gawk-awk"
+  :pre-let ((gawk-exec (executable-find "gawk")))
+  :pre-check (unless gawk-exec
+               (error "Cannot find gawk executable"))
   :write-type 'pipe
-  :command (list lessc-exec  "--lint" "--no-color" "-")
+  :command (list gawk-exec
+                 ;; Avoid code execution.  See https://github.com/w0rp/ale/pull/1411
+                 "--source" "BEGIN{exit} END{exit 0}"
+                 "-f" "-"
+                 "--lint"
+                 null-device)
   :regexps
-  ((error bol (+ not-newline) ": " (message) " in - on line " line ", column " column ":" eol)))
+  ((error   bol (? "g") "awk: -:" line ": " (or "fatal" "error") ": " (message) eol)
+   (warning bol (? "g") "awk: -:" line ": " "warning"            ": " (message) eol)))
 
-(provide 'flymake-rest-less)
+(provide 'flymake-collection-awk-gawk)
 
-
-;;; flymake-rest-less.el ends here
+;;; flymake-collection-awk-gawk.el ends here

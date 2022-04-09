@@ -1,6 +1,6 @@
-;;; flymake-rest-xmllint.el --- XML diagnostic function -*- lexical-binding: t; -*-
+;;; flymake-collection-jsonlint.el --- JSONLint diagnostic function -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021  mohsin kaleem
+;; Copyright (c) 2021 Mohsin Kaleem
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,30 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for XML using xmllint.
+;; `flymake' syntax checker for JSON using jsonlint.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-xmllint "flymake-rest-xmllint")
-(flymake-rest-define-rx flymake-rest-xmllint
-  "A XML syntax checker and validator using the xmllint utility.
+;;;###autoload (autoload 'flymake-collection-jsonlint "flymake-collection-jsonlint")
+(flymake-collection-define-rx flymake-collection-jsonlint
+  "A JSON syntax and style checker using jsonlint.
 
-The xmllint is part of libxml2, see URL `http://www.xmlsoft.org/'."
-  :title "xmllint"
-  :pre-let ((xmllint-exec (executable-find "xmllint")))
-  :pre-check
-  (unless xmllint-exec
-    (error "Cannot find xmllint executable"))
-  :write-type 'pipe
-  :command `(,xmllint-exec "--noout" "-")
+See URL `https://github.com/zaach/jsonlint'."
+  :title "jsonlint"
+  :pre-let ((jsonlint-exec (executable-find "jsonlint")))
+  :pre-check (unless jsonlint-exec
+               (error "Cannot find jsonlint executable"))
+  :write-type 'file
+  :command (list jsonlint-exec "-c" "-q" flymake-collection-temp-file)
   :regexps
-  ((error bol "-:" line ": " (message) eol)))
+  ((error bol (file-name) ": line " line ", col " column ", " (message) eol)))
 
-(provide 'flymake-rest-xmllint)
+(provide 'flymake-collection-jsonlint)
 
-;;; flymake-rest-xmllint.el ends here
+;;; flymake-collection-jsonlint.el ends here

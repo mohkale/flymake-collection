@@ -1,4 +1,4 @@
-;;; flymake-rest-markdownlint.el --- Markdownlint diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-html-tidy.el --- Tidy-HTML5 diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,37 +22,31 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for markdown using markdownlint.
+;; `flymake' syntax and style checker for HTML using Tidy.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-(defcustom flymake-rest-markdownlint-style nil
-  "Path to the style config for markdownlint."
-  :type 'string
-  :group 'flymake-rest)
+;;;###autoload (autoload 'flymake-collection-html-tidy "flymake-collection-html-tidy")
+(flymake-collection-define-rx flymake-collection-html-tidy
+  "A HTML syntax and style checker using Tidy.
 
-;;;###autoload (autoload 'flymake-rest-markdownlint "flymake-rest-markdownlint")
-(flymake-rest-define-rx flymake-rest-markdownlint
-  "Markdown checker using mdl.
-
-See URL `https://github.com/markdownlint/markdownlint'."
-  :title "markdownlint"
-  :pre-let ((mdl-exec (executable-find "mdl")))
-  :pre-check (unless mdl-exec
-               (error "Cannot find mdl executable"))
+See URL `https://github.com/htacg/tidy-html5'."
+  :title "tidy"
+  :pre-let ((tidy-exec (executable-find "tidy")))
+  :pre-check (unless tidy-exec
+               (error "Cannot find tidy executable"))
   :write-type 'pipe
-  :command `(,mdl-exec
-             ,@(and flymake-rest-markdownlint-style
-                    `("--style" ,flymake-rest-markdownlint-style)))
+  :command `(,tidy-exec "-lang" "en" "-e" "-q")
   :regexps
-  ((error bol "(stdin):" line ": " (id "MD" (+ digit)) " " (message) eol)))
+  ((error   bol "line " line " column " column " - Error: "   (message) eol)
+   (warning bol "line " line " column " column " - Warning: " (message) eol)))
 
-(provide 'flymake-rest-markdownlint)
+(provide 'flymake-collection-html-tidy)
 
-;;; flymake-rest-markdownlint.el ends here
+;;; flymake-collection-html-tidy.el ends here

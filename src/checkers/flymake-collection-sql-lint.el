@@ -1,4 +1,4 @@
-;;; flymake-rest-sqlint.el --- SQL diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-sql-lint.el --- SQL diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,42 +22,40 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for sql using sqlint.
+;; `flymake' syntax checker for sql using sql-lint.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-sqlint "flymake-rest-sqlint")
-(flymake-rest-define-rx flymake-rest-sqlint
-  "A SQL syntax checker using the sqlint tool.
+(defcustom flymake-collection-sql-lint-driver nil
+  "The SQL driver to pass to sql-lint."
+  :type '(choice
+           (const :tag "Default" nil)
+           (const :tag "MySQL" "mysql")
+           (const :tag "PostgreSQL" "postgres"))
+  :group 'flymake-collection)
 
-See URL `https://github.com/purcell/sqlint'."
+;;;###autoload (autoload 'flymake-collection-sql-lint "flymake-collection-sql-lint")
+(flymake-collection-define-rx flymake-collection-sql-lint
+  "A SQL syntax checker using the sql-lint tool.
+
+See URL `https://github.com/joereynolds/sql-lint'."
   :title "sql-lint"
-  :pre-let ((lint-exec (executable-find "sqlint")))
+  :pre-let ((lint-exec (executable-find "sql-lint")))
   :pre-check (unless lint-exec
-               (error "Cannot find sqlint executable"))
+               (error "Cannot find sql-lint executable"))
   :write-type 'pipe
-  :command (list lint-exec)
+  :command `(,lint-exec
+             ,@(when flymake-collection-sql-lint-driver
+                 `("--driver" ,flymake-collection-sql-lint-driver)))
   :regexps
-  ((warning bol "stdin:" line ":" column ":WARNING "
-     (message (one-or-more not-newline)
-       (zero-or-more "\n"
-         (one-or-more "  ")
-         (one-or-more not-newline)))
-     eol)
-    (error bol "stdin:" line ":" column ":ERROR "
-      (message (one-or-more not-newline)
-        (zero-or-more "\n"
-          (one-or-more "  ")
-          (one-or-more not-newline)))
-      eol)))
+  ((warning bol "stdin:" line " [sql-lint: " (id (one-or-more (any alnum "-"))) "] " (message) eol)))
 
-(provide 'flymake-rest-sqlint)
+(provide 'flymake-collection-sql-lint)
 
-;;; flymake-rest-sqlint.el ends here
-
+;;; flymake-collection-sql-lint.el ends here

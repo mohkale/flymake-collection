@@ -1,4 +1,4 @@
-;;; flymake-rest-commands.el --- Helpful commands for working with flymake-rest -*- lexical-binding: t -*-
+;;; flymake-collection-commands.el --- Helpful commands for working with flymake-collection -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -28,18 +28,18 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest-hook)
+(require 'flymake-collection-hook)
 
-(defun flymake-rest-change-checker--cands (all-modes)
-  "Candidates for `flymake-rest-change-checker'.
+(defun flymake-collection-change-checker--cands (all-modes)
+  "Candidates for `flymake-collection-change-checker'.
 With ALL-MODES fetch all registered flymake checkers even when
 they aren't associated with the current mode."
   (let ((configured-checkers (flymake--collect #'identity)))
     (cl-remove-duplicates
      (cl-loop for (mode . checkers) in
               (if all-modes
-                  flymake-rest-config
-                (list (assoc major-mode flymake-rest-config)))
+                  flymake-collection-config
+                (list (assoc major-mode flymake-collection-config)))
               append
               (cl-loop for it in checkers
                        with checker = nil
@@ -53,10 +53,10 @@ they aren't associated with the current mode."
                                        mode checker exists)))
      :test (lambda (a b) (string-equal (car a) (car b))))))
 
-(defun flymake-rest-change-checker--read-checkers (&optional all-modes)
+(defun flymake-collection-change-checker--read-checkers (&optional all-modes)
   "Read one or more flymake checkers.
-See `flymake-rest-change-checker--cands' for a description of ALL-MODES."
-  (let* ((cands (flymake-rest-change-checker--cands all-modes))
+See `flymake-collection-change-checker--cands' for a description of ALL-MODES."
+  (let* ((cands (flymake-collection-change-checker--cands all-modes))
          (group-function (lambda (cand transform)
                            (if transform
                                cand
@@ -81,12 +81,12 @@ See `flymake-rest-change-checker--cands' for a description of ALL-MODES."
       nil t))))
 
 ;;;###autoload
-(defun flymake-rest-change-checker (checkers)
+(defun flymake-collection-change-checker (checkers)
   "Interactively enable/disable flymake CHECKERS.
 With `current-prefix-arg' select a checker regardless of `major-mode'."
   (interactive
    (list
-    (flymake-rest-change-checker--read-checkers current-prefix-arg)))
+    (flymake-collection-change-checker--read-checkers current-prefix-arg)))
   (when checkers
     (dolist (checker checkers)
       (cl-destructuring-bind (_cand _mode checker exists) checker
@@ -102,6 +102,8 @@ With `current-prefix-arg' select a checker regardless of `major-mode'."
       (when (called-interactively-p 'interactive)
         (flymake-start)))))
 
-(provide 'flymake-rest-commands)
+(define-obsolete-function-alias 'flymake-rest-change-checker 'flymake-collection-change-checker "2.0.0")
 
-;;; flymake-rest-commands.el ends here
+(provide 'flymake-collection-commands)
+
+;;; flymake-collection-commands.el ends here

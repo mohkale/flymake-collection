@@ -1,4 +1,4 @@
-;;; flymake-rest-gcc.el --- GCC diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-gcc.el --- GCC diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -29,21 +29,21 @@
 (require 'flymake)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-(defcustom flymake-rest-gcc-args
+(defcustom flymake-collection-gcc-args
   '("-pedantic" "-pedantic-errors")
-  "Command line arguments always passed to `flymake-rest-gcc'."
+  "Command line arguments always passed to `flymake-collection-gcc'."
   :type 'list
-  :group 'flymake-rest)
+  :group 'flymake-collection)
 
-(defcustom flymake-rest-gcc-include-path nil
-  "Default include path for gcc in `flymake-rest-gcc'."
+(defcustom flymake-collection-gcc-include-path nil
+  "Default include path for gcc in `flymake-collection-gcc'."
   :type 'list
-  :group 'flymake-rest)
+  :group 'flymake-collection)
 
-;;;###autoload (autoload 'flymake-rest-gcc "flymake-rest-gcc")
-(flymake-rest-define-rx flymake-rest-gcc
+;;;###autoload (autoload 'flymake-collection-gcc "flymake-collection-gcc")
+(flymake-collection-define-rx flymake-collection-gcc
   "A C/C++ syntax checker using GCC.
 
 Requires GCC 4.4 or newer.  See URL `https://gcc.gnu.org/'."
@@ -54,14 +54,14 @@ Requires GCC 4.4 or newer.  See URL `https://gcc.gnu.org/'."
   :write-type 'pipe
   :command `(,gcc-exec
              "-fshow-column"
-             "-iquote" ,(if-let ((file (buffer-file-name flymake-rest-source)))
+             "-iquote" ,(if-let ((file (buffer-file-name flymake-collection-source)))
                             (file-name-directory file)
                           (or (buffer-local-value 'default-directory
-                                                  flymake-rest-source)
+                                                  flymake-collection-source)
                               default-directory))
-             ,@(cl-loop for it in flymake-rest-gcc-include-path
+             ,@(cl-loop for it in flymake-collection-gcc-include-path
                         collect (concat "-I" it))
-             ,@flymake-rest-gcc-args
+             ,@flymake-collection-gcc-args
              "-x" ,(pcase major-mode
                      ('c-mode "c")
                      ((or 'c++-mode _) "c++"))
@@ -75,6 +75,6 @@ Requires GCC 4.4 or newer.  See URL `https://gcc.gnu.org/'."
    (warning bol "<stdin>:" line ":" column ": " "warning"            ": " (message) eol)
    (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol)))
 
-(provide 'flymake-rest-gcc)
+(provide 'flymake-collection-gcc)
 
-;;; flymake-rest-gcc.el ends here
+;;; flymake-collection-gcc.el ends here

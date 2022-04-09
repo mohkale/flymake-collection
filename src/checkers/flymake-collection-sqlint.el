@@ -1,4 +1,4 @@
-;;; flymake-rest-hlint.el --- HLint diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-sqlint.el --- SQL diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,44 +22,42 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for Haskell using hlint.
+;; `flymake' syntax checker for sql using sqlint.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-hlint "flymake-rest-hlint")
-(flymake-rest-define-rx flymake-rest-hlint
-  "A Haskell syntax and style checker using hlint.
+;;;###autoload (autoload 'flymake-collection-sqlint "flymake-collection-sqlint")
+(flymake-collection-define-rx flymake-collection-sqlint
+  "A SQL syntax checker using the sqlint tool.
 
-See URL `https://github.com/ndmitchell/hlint'."
-  :title "hlint"
-  :pre-let ((hlint-exec (executable-find "hlint")))
-  :pre-check (unless hlint-exec
-               (error "Cannot find hlint executable"))
+See URL `https://github.com/purcell/sqlint'."
+  :title "sql-lint"
+  :pre-let ((lint-exec (executable-find "sqlint")))
+  :pre-check (unless lint-exec
+               (error "Cannot find sqlint executable"))
   :write-type 'pipe
-  :command (list hlint-exec "-" "--no-exit-code")
+  :command (list lint-exec)
   :regexps
-  ((error bol (file-name) ":" line ":" column (? "-" end-column) ": Error: "
+  ((warning bol "stdin:" line ":" column ":WARNING "
      (message (one-or-more not-newline)
        (zero-or-more "\n"
-        (one-or-more not-newline)))
-     eol)
-   (warning bol (file-name) ":" line ":" column (? "-" end-column) ": Warning: "
-     (message (one-or-more not-newline)
-       (zero-or-more "\n"
+         (one-or-more "  ")
          (one-or-more not-newline)))
      eol)
-   (note bol (file-name) ":" line ":" column (? "-" end-column) ": Suggestion: "
-     (message (one-or-more not-newline)
-       (zero-or-more "\n"
-         (one-or-more not-newline)))
-     eol)))
+    (error bol "stdin:" line ":" column ":ERROR "
+      (message (one-or-more not-newline)
+        (zero-or-more "\n"
+          (one-or-more "  ")
+          (one-or-more not-newline)))
+      eol)))
 
-(provide 'flymake-rest-hlint)
+(provide 'flymake-collection-sqlint)
 
-;;; flymake-rest-hlint.el ends here
+;;; flymake-collection-sqlint.el ends here
+

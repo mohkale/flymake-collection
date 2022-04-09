@@ -1,14 +1,14 @@
-;;; flymake-rest.el --- Core features for flymake -*- lexical-binding: t -*-
+;;; flymake-collection.el --- Core features for flymake -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2021 Mohsin Kaleem
 
 ;; Author: Mohsin Kaleem <mohkale@kisara.moe>
 ;; Created: 15 June 2021
-;; Homepage: https://github.com/mohkale/flymake-rest
+;; Homepage: https://github.com/mohkale/flymake-collection
 ;; Keywords: language tools
 ;; Package-Requires: ((emacs "28.1") (let-alist "1.0") (flymake "1.2.1"))
 ;; SPDX-License-Identifier: MIT
-;; Version: 1.0.0
+;; Version: 2.0.0
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 ;;
@@ -32,36 +32,36 @@
 
 ;;; Commentary:
 
-;; flymake-rest is a helper for migrating from flycheck to flymake.
+;; flymake-collection is a helper for migrating from flycheck to flymake.
 ;;
 ;; This includes the definition of several diagnostic functions, hooks
 ;; to specify the precedence and preferred order of them and the means
 ;; to easily configure flymake linting.
 ;;
-;; For more see [[file:README.org][README.org]] or https://github.com/mohkale/flymake-rest.
+;; For more see [[file:README.org][README.org]] or https://github.com/mohkale/flymake-collection.
 
 ;;; Code:
 
-(defgroup flymake-rest nil
+(defgroup flymake-collection nil
   "Flymake flycheck compatibility."
-  :prefix "flymake-rest"
+  :prefix "flymake-collection"
   :group 'flymake)
 
-(defgroup flymake-rest-faces nil
-  "Faces used by flymake-rest."
-  :group 'flymake-rest
+(defgroup flymake-collection-faces nil
+  "Faces used by flymake-collection."
+  :group 'flymake-collection
   :group 'faces)
 
-(defface flymake-rest-checker
+(defface flymake-collection-checker
   '((t (:inherit (dired-directory bold))))
   "Title of a checker as shown in the diagnostic message.")
 
-(defface flymake-rest-diag-id
+(defface flymake-collection-diag-id
   '((t (:inherit font-lock-type-face)))
   "Id of a diagnostic.")
 
-(defun flymake-rest-parse-json (output)
-  "Helper for `flymake-rest-define' to parse JSON OUTPUT.
+(defun flymake-collection-parse-json (output)
+  "Helper for `flymake-collection-define' to parse JSON OUTPUT.
 
 Adapted from `flycheck-parse-json'. This reads a bunch of JSON-Lines
 like output from OUTPUT into a list and then returns it."
@@ -81,6 +81,10 @@ like output from OUTPUT into a list and then returns it."
         (forward-line)))
     objects))
 
-(provide 'flymake-rest)
+(define-obsolete-face-alias 'flymake-rest-checker 'flymake-collection-checker "2.0.0")
+(define-obsolete-face-alias 'flymake-rest-diag-id 'flymake-collection-diag-id "2.0.0")
+(define-obsolete-function-alias 'flymake-rest-parse-json 'flymake-collection-parse-json "2.0.0")
 
-;;; flymake-rest.el ends here
+(provide 'flymake-collection)
+
+;;; flymake-collection.el ends here

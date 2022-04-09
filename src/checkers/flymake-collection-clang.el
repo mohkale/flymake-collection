@@ -1,4 +1,4 @@
-;;; flymake-rest-clang.el --- Clang diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-clang.el --- Clang diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -27,20 +27,20 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-(defvar flymake-rest-clang-args
+(defvar flymake-collection-clang-args
   '("-pedantic" "-pedantic-errors")
-  "Command line arguments always passed to `flymake-rest-clang'.")
+  "Command line arguments always passed to `flymake-collection-clang'.")
 
-(defvar flymake-rest-clang-include-path nil
-  "Default include path for gcc in `flymake-rest-clang'.")
+(defvar flymake-collection-clang-include-path nil
+  "Default include path for gcc in `flymake-collection-clang'.")
 
-;;;###autoload (autoload 'flymake-rest-clang "flymake-rest-clang")
-(flymake-rest-define-rx flymake-rest-clang
+;;;###autoload (autoload 'flymake-collection-clang "flymake-collection-clang")
+(flymake-collection-define-rx flymake-collection-clang
   "A C/C++ syntax checker using Clang.
 
 See URL `http://clang.llvm.org/'."
@@ -54,14 +54,14 @@ See URL `http://clang.llvm.org/'."
              "-fno-color-diagnostics"                                 ; Do not include color codes in output
              "-fno-caret-diagnostics"                                 ; Do not visually indicate the source
              "-fno-diagnostics-show-option"                           ; Do not show the corresponding
-             "-iquote" ,(if-let ((file (buffer-file-name flymake-rest-source)))
+             "-iquote" ,(if-let ((file (buffer-file-name flymake-collection-source)))
                             (file-name-directory file)
                           (or (buffer-local-value 'default-directory
-                                                  flymake-rest-source)
+                                                  flymake-collection-source)
                               default-directory))
-             ,@(cl-loop for it in flymake-rest-clang-include-path
+             ,@(cl-loop for it in flymake-collection-clang-include-path
                         collect (concat "-I" it))
-             ,@flymake-rest-clang-args
+             ,@flymake-collection-clang-args
              "-x" ,(pcase major-mode
                      ('c-mode "c")
                      ((or 'c++-mode _) "c++"))
@@ -71,6 +71,6 @@ See URL `http://clang.llvm.org/'."
    (warning bol "<stdin>:" line ":" column ": " "warning"            ": " (message) eol)
    (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol)))
 
-(provide 'flymake-rest-gcc)
+(provide 'flymake-collection-gcc)
 
-;;; flymake-rest-clang.el ends here
+;;; flymake-collection-clang.el ends here

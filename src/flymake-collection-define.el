@@ -1,4 +1,4 @@
-;;; flymake-rest-define.el --- A macro to simplify checker creation -*- lexical-binding: t -*-
+;;; flymake-collection-define.el --- A macro to simplify checker creation -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -22,7 +22,7 @@
 
 ;;; Commentary:
 
-;; This file provides a macro `flymake-rest-define', adapted heavily from
+;; This file provides a macro `flymake-collection-define', adapted heavily from
 ;; [[https://github.com/karlotness/flymake-quickdef/blob/150c5839768a3d32f988f9dc08052978a68f2ad7/flymake-quickdef.el][flymake-quickdef]], to allow streamlined syntax-checker definitions. The
 ;; intended purpose is to abstract the process creation, management and cleanup
 ;; for a checker as much as possible, leaving the developer to only have to
@@ -31,14 +31,14 @@
 ;; Also in this file you'll find helper macros to parse diagnostics using
 ;; regexps and simplify JSON processing.
 ;;
-;; `flymake-rest-define-rx' works by defining some regular expressions (one for
+;; `flymake-collection-define-rx' works by defining some regular expressions (one for
 ;; each severity level of the checker) and then matching each line of the output
 ;; to a regular expression. Special capture groups have been setup by the parser
 ;; that should be used by any calling checkers to ensure the correct fields from
 ;; the output can be parsed. The approach for this was heavily inspired by
 ;; flychecks :error-parsers feature.
 ;;
-;; `flymake-rest-define' can be used to parse JSON output from the checker into
+;; `flymake-collection-define' can be used to parse JSON output from the checker into
 ;; flymake diagnostics. This works by parsing the entire JSON input into a list
 ;; of diagnostic related data, and then iteratively parsing it into diagnostics.
 
@@ -48,7 +48,7 @@
 (require 'flymake)
 
 ;;;###autoload
-(defvar-local flymake-rest-define--procs nil
+(defvar-local flymake-collection-define--procs nil
   "The local plist of checker processes running in the current buffer.
 When a checker process is begun its pushed into this plist and when its
 finished its removed and killed. In the very often circumstance where a
@@ -56,9 +56,11 @@ new check is begun while an old check is still pending, the old check is
 killed and replaced with the new check.")
 
 
-;;; `flymake-rest-define'
+;;; `flymake-collection-define'
 
-(defun flymake-rest-define--temp-file (temp-dir temp-file source-inplace)
+(define-obsolete-function-alias 'flymake-rest-define 'flymake-collection-define "2.0.0")
+
+(defun flymake-collection-define--temp-file (temp-dir temp-file source-inplace)
   "Let forms for defining a temporary directory and file.
 TEMP-DIR and TEMP-FILE are the symbols used for the corresponding variables.
 SOURCE-INPLACE specifies whether the TEMP-DIR should be in the same working
@@ -84,12 +86,12 @@ doesn't exist: %s" dir))
                                                  (buffer-name)))))
        (make-temp-file ".flymake_" nil (concat "_" basename))))))
 
-(defmacro flymake-rest-define--parse-diags
+(defmacro flymake-collection-define--parse-diags
     (title proc-symb diags-symb current-diag-symb source-symb error-parser)
   "Helper macro to parse diagnostics into DIAGS-SYMB.
 TITLE is the title of the current syntax checker. PROC-SYMB, DIAGS-SYMB,
 CURRENT-DIAGS-SYMB, SOURCE-SYMB, ERROR-PARSER are all described in
-`flymake-rest-define'."
+`flymake-collection-define'."
   `(with-current-buffer ,source-symb
      (save-restriction
        (widen)
@@ -112,7 +114,7 @@ CURRENT-DIAGS-SYMB, SOURCE-SYMB, ERROR-PARSER are all described in
                                   (nth 4 ,current-diag-symb)
                                   ,(concat
                                     " ("
-                                    (propertize title 'face 'flymake-rest-checker)
+                                    (propertize title 'face 'flymake-collection-checker)
                                     ")")))))
                      (push (apply #'flymake-make-diagnostic
                                   ,current-diag-symb)
@@ -127,7 +129,7 @@ CURRENT-DIAGS-SYMB, SOURCE-SYMB, ERROR-PARSER are all described in
 ;; WARN: I can't seem to make docstring optional and use keys, because
 ;; the key for the first keyword argument will become the docstring if
 ;; there's no docstring.
-(cl-defmacro flymake-rest-define
+(cl-defmacro flymake-collection-define
     (name docstring
           &optional &key title command error-parser write-type
           source-inplace pre-let pre-check)
@@ -141,13 +143,13 @@ Available Variables
 Within the body of NAME several macro specific variables will be
 made available for use with ERROR-PARSER or COMMAND, and other
 optional arguments such as PRE-LET. This includes:
-* flymake-rest-source
+* flymake-collection-source
   The the buffer where the syntax check originally began.
-* flymake-rest-temp-file
+* flymake-collection-temp-file
   A temporary file where the contents of the current buffer were
   written (only if WRITE-TYPE is 'file)
-* flymake-rest-temp-dir
-  The dirname of flymake-rest-temp-file.
+* flymake-collection-temp-dir
+  The dirname of flymake-collection-temp-file.
 
 Body Execution
 --------------
@@ -161,8 +163,8 @@ used to suffix the message for each diagnostic.
 WRITE-TYPE specifies how the process for a syntax check should recieve
 the input. It should one of 'pipe or 'file (defaulting to 'pipe).
 When set to 'file a temporary file will ve created, copying the contents
-of the `current-buffer'. The variable flymake-rest-temp-file and
-flymake-rest-temp-dir will be bound in the body of NAME and provide
+of the `current-buffer'. The variable flymake-collection-temp-file and
+flymake-collection-temp-dir will be bound in the body of NAME and provide
 access to this temp-file.
 When set to 'pipe, all of the `current-buffer' will be passed to the
 process on its standard input stream after it has begun.
@@ -193,7 +195,7 @@ a value that can be passed to the `flymake-make-diagnostic' function. Once
 there're no more diagnostics to parse this form should evaluate to nil."
   (declare (indent defun) (doc-string 2))
   (unless lexical-binding
-    (error "Need lexical-binding for flymake-rest-define (%s)" name))
+    (error "Need lexical-binding for flymake-collection-define (%s)" name))
   (dolist (elem (list (cons 'command command)
                       (cons 'error-parser error-parser)))
     (unless (cdr elem)
@@ -205,11 +207,11 @@ there're no more diagnostics to parse this form should evaluate to nil."
   (unless (memq write-type '(file pipe))
     (error "Invalid `:write-type' value `%s'" write-type))
 
-  (let* ((temp-dir-symb 'flymake-rest-temp-dir)
-         (temp-file-symb 'flymake-rest-temp-file)
+  (let* ((temp-dir-symb 'flymake-collection-temp-dir)
+         (temp-file-symb 'flymake-collection-temp-file)
          (proc-symb 'proc)
-         (err-symb 'flymake-rest-err)
-         (source-symb 'flymake-rest-source)
+         (err-symb 'flymake-collection-err)
+         (source-symb 'flymake-collection-source)
          (diags-symb 'diags)
          (current-diag-symb 'diag)
          (cleanup-form (when (eq write-type 'file)
@@ -218,14 +220,14 @@ there're no more diagnostics to parse this form should evaluate to nil."
                            `((delete-directory ,temp-dir-symb t)))))
          (not-obsolete-form
           `((eq ,proc-symb
-                (plist-get (buffer-local-value 'flymake-rest-define--procs
+                (plist-get (buffer-local-value 'flymake-collection-define--procs
                                                ,source-symb)
                            ',name)))))
     `(defun ,name (report-fn &rest _args)
        ,docstring
        (let* ((,source-symb (current-buffer))
               ,@(when (eq write-type 'file)
-                  (flymake-rest-define--temp-file
+                  (flymake-collection-define--temp-file
                    temp-dir-symb temp-file-symb source-inplace))
               ,@pre-let)
          ;; With vars defined, do pre-check.
@@ -235,7 +237,7 @@ there're no more diagnostics to parse this form should evaluate to nil."
                  (error ,@cleanup-form
                         (signal (car ,err-symb) (cdr ,err-symb))))))
          ;; Kill any running (obsolete) checkers for current checker and buffer.
-         (let ((,proc-symb (plist-get flymake-rest-define--procs ',name)))
+         (let ((,proc-symb (plist-get flymake-collection-define--procs ',name)))
            (when (process-live-p ,proc-symb)
              (flymake-log :debug "Killing earlier checker process %s" ,proc-symb)
              (kill-process ,proc-symb)))
@@ -262,7 +264,7 @@ there're no more diagnostics to parse this form should evaluate to nil."
                    (unwind-protect
                        (if ,@not-obsolete-form
                            (let ((,diags-symb nil) ,current-diag-symb)
-                             (flymake-rest-define--parse-diags
+                             (flymake-collection-define--parse-diags
                               ,title
                               ,proc-symb
                               ,diags-symb
@@ -293,8 +295,8 @@ exit status %d\nStderr: %s"
                      ,@cleanup-form
                      (kill-buffer (process-buffer ,proc-symb)))))))
              ;; Push the new-process to the process to the process alist.
-             (setq flymake-rest-define--procs
-                   (plist-put flymake-rest-define--procs ',name ,proc-symb))
+             (setq flymake-collection-define--procs
+                   (plist-put flymake-collection-define--procs ',name ,proc-symb))
              ;; If piping, send data to the process.
              ,@(when (eq write-type 'pipe)
                  `((process-send-region ,proc-symb (point-min) (point-max))
@@ -303,12 +305,15 @@ exit status %d\nStderr: %s"
              ,proc-symb))))))
 
 
-;;; `flymake-rest-define-rx'
+;;; `flymake-collection-define-rx'
 
 (eval-when-compile
   (require 'rx))
 
-(defconst flymake-rest-define-parse-rx-constituents
+(define-obsolete-variable-alias 'flymake-rest-define-parse-rx-constituents 'flymake-collection-define-parse-rx-constituents "2.0.0")
+(define-obsolete-function-alias 'flymake-rest-define-rx 'flymake-collection-define-rx "2.0.0")
+
+(defconst flymake-collection-define-parse-rx-constituents
   `((file-name ,(lambda (body)
                   (rx-to-string
                    `(group-n 1 ,@(or (cdr body)
@@ -331,8 +336,8 @@ exit status %d\nStderr: %s"
     (end-line . ,(rx (group-n 6 (one-or-more digit))))
     (end-column . ,(rx (group-n 7 (one-or-more digit))))))
 
-(defmacro flymake-rest-define--parse-rx (regexps)
-  "`flymake-rest-define' parser using regular expressions.
+(defmacro flymake-collection-define--parse-rx (regexps)
+  "`flymake-collection-define' parser using regular expressions.
 
 This macro generates a parser that for each line of output from the
 checker process, matches one or more regular expressions and then
@@ -345,7 +350,7 @@ turned into a keyword by this macro) and the cdr should be a
 sequence of entries that can be interpreted by the `rx' macro.
 To simplify matching specific fields in the parsed output several
 helper extensions to `rx' have been defined such as file-name or
-line. For a list of these see `flymake-rest-define-parse-rx-constituents'.
+line. For a list of these see `flymake-collection-define-parse-rx-constituents'.
 The only required fields that MUST be parsed are the line number
 and message. If these are ommited the matched diagnostic will be
 skipped.
@@ -355,11 +360,11 @@ the special ones described above. This is because any extra capture
 groups are used to associate the severity of the diagnostic to the
 regexp that matched it (as a performance improvement).
 
-For an example of this macro in action, see `flymake-rest-pycodestyle'."
+For an example of this macro in action, see `flymake-collection-pycodestyle'."
   (unless (> (length regexps) 0)
     (error "Must supply at least one regexp for error, warning or note"))
 
-  (let* ((group-count (length flymake-rest-define-parse-rx-constituents))
+  (let* ((group-count (length flymake-collection-define-parse-rx-constituents))
          (regexps
           ;; To avoid having to rematch each diagnostic more than once we append
           ;; a special extra capture group (greater than all the ones above) that
@@ -371,12 +376,12 @@ For an example of this macro in action, see `flymake-rest-pycodestyle'."
                    collect (cons `(seq ,@regex (group-n ,count ""))
                                  (intern (concat ":" (symbol-name severity))))))
          (combined-regex
-          (let ((rx-constituents (append flymake-rest-define-parse-rx-constituents
+          (let ((rx-constituents (append flymake-collection-define-parse-rx-constituents
                                          (bound-and-true-p rx-constituents) nil)))
             (rx-to-string `(or ,@(mapcar #'car regexps))
                           'no-group)))
          (severity-seq (mapcar #'cdr regexps)))
-    ;; Because if this evaluates to nil `flymake-rest-define' thinks there
+    ;; Because if this evaluates to nil `flymake-collection-define' thinks there
     ;; are no-more diagnostics to be parsed, we wrap it in a loop that exits
     ;; the moment we find a match, but otherwise keeps moving through diagnostics
     ;; until there actually aren't any more to match.
@@ -410,38 +415,38 @@ For an example of this macro in action, see `flymake-rest-pycodestyle'."
                                            (symbol-name it)))
                             nil))
                (t
-                (let ((loc (flymake-diag-region flymake-rest-source
+                (let ((loc (flymake-diag-region flymake-collection-source
                                                 (string-to-number line)
                                                 (when column
                                                   (string-to-number column))))
                       (loc-end (when end-line
-                                 (flymake-diag-region flymake-rest-source
+                                 (flymake-diag-region flymake-collection-source
                                                       (string-to-number end-line)
                                                       (when end-column
                                                         (string-to-number end-column))))))
                   (when loc-end
                     (setcdr loc (cdr loc-end)))
-                  (list flymake-rest-source
+                  (list flymake-collection-source
                         (car loc)
                         (cdr loc)
                         (nth severity-ix (quote ,severity-seq))
                         (concat
                          (when id
-                           (concat (propertize id 'face 'flymake-rest-diag-id) " "))
+                           (concat (propertize id 'face 'flymake-collection-diag-id) " "))
                          message)))))))))
        res)))
 
-(cl-defmacro flymake-rest-define-rx
+(cl-defmacro flymake-collection-define-rx
     (name docstring
           &optional &key title command write-type source-inplace pre-let pre-check regexps)
-  "`flymake-rest-define' helper using `rx' syntax to parse diagnostics.
-This helper macro adapts `flymake-rest-define' to use an error-parser built
-from a collections of REGEXPS (see `flymake-rest-define--parse-rx').
+  "`flymake-collection-define' helper using `rx' syntax to parse diagnostics.
+This helper macro adapts `flymake-collection-define' to use an error-parser
+built from a collections of REGEXPS (see `flymake-collection-define--parse-rx').
 
-See `flymake-rest-define' for a description of NAME, DOCSTRING, TITLE, COMMAND,
-WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
+See `flymake-collection-define' for a description of NAME, DOCSTRING, TITLE,
+COMMAND,WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
   (declare (indent defun) (doc-string 2))
-  `(flymake-rest-define ,name
+  `(flymake-collection-define ,name
      ,docstring
      :title ,title
      :command ,command
@@ -450,16 +455,18 @@ WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
      :pre-let ,pre-let
      :pre-check ,pre-check
      :error-parser
-     (flymake-rest-define--parse-rx ,regexps)))
+     (flymake-collection-define--parse-rx ,regexps)))
 
 
-;;; `flymake-rest-define-enumerate'
+;;; `flymake-collection-define-enumerate'
 
-(cl-defmacro flymake-rest-define-enumerate
+(define-obsolete-function-alias 'flymake-rest-define-enumerate 'flymake-collection-define-enumerate "2.0.0")
+
+(cl-defmacro flymake-collection-define-enumerate
   (name docstring
         &optional &key title command write-type source-inplace
         pre-let pre-check generator enumerate-parser)
-  "`flymake-rest-define' helper for dealing with serialised diagnostics.
+  "`flymake-collection-define' helper for dealing with serialised diagnostics.
 This helper parses a collection of diagnostics using GENERATOR and then
 enumerates through it, entry by entry using ENUMERATE-PARSER. This is useful
 for linters that produce output such as JSON, to avoid having to reparse the
@@ -469,12 +476,12 @@ The value of the current entry from GENERATOR in ENUMERATE-PARSER will be set to
 the variable `it'. ENUMERATE-PARSER should evaluate to a form that can be passed
 to `flymake-make-diagnostic'.
 
-See `flymake-rest-define' for a description of NAME, DOCSTRING, TITLE, COMMAND,
-WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
+See `flymake-collection-define' for a description of NAME, DOCSTRING, TITLE,
+COMMAND, WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
   (declare (indent defun) (doc-string 2))
-  (let ((entries-var 'flymake-rest-entries)
-        (parsed-var 'flymake-rest-parsed))
-    `(flymake-rest-define ,name
+  (let ((entries-var 'flymake-collection-entries)
+        (parsed-var 'flymake-collection-parsed))
+    `(flymake-collection-define ,name
        ,docstring
        :title ,title
        :command ,command
@@ -497,6 +504,6 @@ WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
              (setq res ,enumerate-parser))
            res)))))
 
-(provide 'flymake-rest-define)
+(provide 'flymake-collection-define)
 
-;;; flymake-rest-define.el ends here
+;;; flymake-collection-define.el ends here

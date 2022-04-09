@@ -1,6 +1,6 @@
-;;; flymake-rest-lua.el --- lua diagnostic function using the lua compiler -*- lexical-binding: t -*-
+;;; flymake-collection-xmllint.el --- XML diagnostic function -*- lexical-binding: t; -*-
 
-;; Copyright (c) 2021 Mohsin Kaleem
+;; Copyright (C) 2021  mohsin kaleem
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,31 @@
 
 ;;; Commentary:
 
-;; `flymake' syntax checker for lua using the lua compiler.
+;; `flymake' syntax checker for XML using xmllint.
 
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-lua "flymake-rest-lua")
-(flymake-rest-define-rx flymake-rest-lua
-  "A Lua syntax checker using the Lua compiler.
+;;;###autoload (autoload 'flymake-collection-xmllint "flymake-collection-xmllint")
+(flymake-collection-define-rx flymake-collection-xmllint
+  "A XML syntax checker and validator using the xmllint utility.
 
-See URL `http://www.lua.org/'."
-  :pre-let ((lua-exec (executable-find "luac")))
-  :pre-check (unless lua-exec
-               (user-error "Cannot find lua compiler executable"))
+The xmllint is part of libxml2, see URL `http://www.xmlsoft.org/'."
+  :title "xmllint"
+  :pre-let ((xmllint-exec (executable-find "xmllint")))
+  :pre-check
+  (unless xmllint-exec
+    (error "Cannot find xmllint executable"))
   :write-type 'pipe
-  :command `(,lua-exec "-p" "-")
+  :command `(,xmllint-exec "--noout" "-")
   :regexps
-  ((error bol
-          ;; Skip the name of the luac executable.
-          (minimal-match (zero-or-more not-newline))
-          ": stdin:" line ": " (message) eol)))
+  ((error bol "-:" line ": " (message) eol)))
 
-(provide 'flymake-rest-lua)
+(provide 'flymake-collection-xmllint)
 
-;;; flymake-rest-lua.el ends here
+;;; flymake-collection-xmllint.el ends here

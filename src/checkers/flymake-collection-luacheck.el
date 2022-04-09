@@ -1,4 +1,4 @@
-;;; flymake-rest-luacheck.el --- luacheck diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-luacheck.el --- luacheck diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -27,12 +27,12 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-(defcustom flymake-rest-luacheck-standards nil
+(defcustom flymake-collection-luacheck-standards nil
   "The standards to use in luacheck.
 
 The value of this variable is either a list of strings denoting
@@ -41,16 +41,16 @@ non-nil, pass the standards via one or more `--std' options."
   :type '(choice (const :tag "Default" nil)
                  (repeat :tag "Custom standards"
                          (string :tag "Standard name")))
-  :group 'flymake-rest)
+  :group 'flymake-collection)
 
-(defcustom flymake-rest-luacheck-rc nil ; ".luacheckrc"
+(defcustom flymake-collection-luacheck-rc nil ; ".luacheckrc"
   "Optional configuration file for luacheck."
   :type '(choice (const :tag "Default" nil)
                  (file :tag "Config file"))
-  :group 'flymake-rest)
+  :group 'flymake-collection)
 
-;;;###autoload (autoload 'flymake-rest-luacheck "flymake-rest-luacheck")
-(flymake-rest-define-rx flymake-rest-luacheck
+;;;###autoload (autoload 'flymake-collection-luacheck "flymake-collection-luacheck")
+(flymake-collection-define-rx flymake-collection-luacheck
   "A Lua syntax checker using luacheck.
 
 See URL `https://github.com/mpeterv/luacheck'."
@@ -63,12 +63,12 @@ See URL `https://github.com/mpeterv/luacheck'."
              "--formatter" "plain"
              "--codes"                   ; Show warning codes
              "--no-color"
-             ,@(when flymake-rest-luacheck-standards
+             ,@(when flymake-collection-luacheck-standards
                  (list "--std"
-                       (mapconcat #'identity flymake-rest-luacheck-standards "+")))
-             ,@(when flymake-rest-luacheck-rc
-                 (list "--config" flymake-rest-luacheck-rc))
-             ,@(when-let ((file (buffer-file-name flymake-rest-source)))
+                       (mapconcat #'identity flymake-collection-luacheck-standards "+")))
+             ,@(when flymake-collection-luacheck-rc
+                 (list "--config" flymake-collection-luacheck-rc))
+             ,@(when-let ((file (buffer-file-name flymake-collection-source)))
                  (list "--filename" file))
              "-")
   :regexps
@@ -76,6 +76,6 @@ See URL `https://github.com/mpeterv/luacheck'."
   ((warning bol (optional (file-name)) ":" line ":" column ":"           " (" (id "W" (one-or-more digit)) ") "  (message) eol)
    (error   bol (optional (file-name)) ":" line ":" column ":" (optional " (" (id "E" (one-or-more digit)) ") ") (message) eol)))
 
-(provide 'flymake-rest-luacheck)
+(provide 'flymake-collection-luacheck)
 
-;;; flymake-rest-luacheck.el ends here
+;;; flymake-collection-luacheck.el ends here

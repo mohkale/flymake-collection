@@ -1,4 +1,4 @@
-;;; flymake-rest-rubocop.el --- Rubocop diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-rubocop.el --- Rubocop diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -27,32 +27,32 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-(defcustom flymake-rest-rubocop-use-bundler t
+(defcustom flymake-collection-rubocop-use-bundler t
   "When true use bundle exec for rubocop checks."
   :type 'boolean
-  :group 'flymake-rest)
+  :group 'flymake-collection)
 
-;;;###autoload (autoload 'flymake-rest-rubocop "flymake-rest-rubocop")
-(flymake-rest-define-rx flymake-rest-rubocop
+;;;###autoload (autoload 'flymake-collection-rubocop "flymake-collection-rubocop")
+(flymake-collection-define-rx flymake-collection-rubocop
   "A Ruby syntax checker using rubocop.
 
 See URL `https://github.com/rubocop/rubocop'."
   :title "rubocop"
   :pre-let ((rubocop-exec (executable-find "rubocop"))
-            (file-name (or (buffer-file-name flymake-rest-source)
+            (file-name (or (buffer-file-name flymake-collection-source)
                            "-")))
   :pre-check (unless rubocop-exec
                (error "Cannot find rubocop executable"))
   :write-type 'pipe
-  :command `(,@(or (and flymake-rest-rubocop-use-bundler
-                        (locate-dominating-file (or (buffer-file-name flymake-rest-source)
+  :command `(,@(or (and flymake-collection-rubocop-use-bundler
+                        (locate-dominating-file (or (buffer-file-name flymake-collection-source)
                                                     (buffer-local-value 'default-directory
-                                                                        flymake-rest-source)
+                                                                        flymake-collection-source)
                                                     default-directory)
                                                 "Gemfile")
                         (if-let ((bundler-exec (executable-find "bundler")))
@@ -76,6 +76,6 @@ See URL `https://github.com/rubocop/rubocop'."
    (warning bol (file-name) ":" line ":" column ": " "C"          ": " (? "[Correctable] ") (message) eol)
    (note    bol (file-name) ":" line ":" column ": " "W"          ": " (? "[Correctable] ") (message) eol)))
 
-(provide 'flymake-rest-rubocop)
+(provide 'flymake-collection-rubocop)
 
-;;; flymake-rest-rubocop.el ends here
+;;; flymake-collection-rubocop.el ends here

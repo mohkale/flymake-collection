@@ -1,4 +1,4 @@
-;;; flymake-rest-shellcheck.el --- Shellcheck diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-shellcheck.el --- Shellcheck diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -27,20 +27,20 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-(defcustom flymake-rest-shellcheck-follow-sources t
-  "Whether to follow sources in `flymake-rest-shellcheck'."
+(defcustom flymake-collection-shellcheck-follow-sources t
+  "Whether to follow sources in `flymake-collection-shellcheck'."
   :type '(choice (const :tag "Follow source files" t)
                  (const :tag "Follow source files and lint them" lint)
                  (const :tag "Do not follow source files" nil))
-  :group 'flymake-rest)
+  :group 'flymake-collection)
 
-;;;###autoload (autoload 'flymake-rest-shellcheck "flymake-rest-shellcheck")
-(flymake-rest-define-enumerate flymake-rest-shellcheck
+;;;###autoload (autoload 'flymake-collection-shellcheck "flymake-collection-shellcheck")
+(flymake-collection-define-enumerate flymake-collection-shellcheck
   "A shell script syntax and style checker using Shellcheck.
 
 See URL `https://github.com/koalaman/shellcheck/'."
@@ -53,29 +53,29 @@ See URL `https://github.com/koalaman/shellcheck/'."
              "--format" "json"
              ,@(when-let ((sh (bound-and-true-p sh-shell)))
                  `("--shell" ,(symbol-name sh)))
-             ,@(when flymake-rest-shellcheck-follow-sources
+             ,@(when flymake-collection-shellcheck-follow-sources
                  `("--external-sources"
-                   ,@(when (eq flymake-rest-shellcheck-follow-sources 'lint)
+                   ,@(when (eq flymake-collection-shellcheck-follow-sources 'lint)
                        '("--check-sourced"))))
              "-")
   :generator
   (car
-   (flymake-rest-parse-json
+   (flymake-collection-parse-json
     (buffer-substring-no-properties
      (point-min) (point-max))))
   :enumerate-parser
   (let-alist it
-    (let ((loc (cons (car (flymake-diag-region flymake-rest-source .line .column))
-                     (cdr (flymake-diag-region flymake-rest-source .endLine .endColumn)))))
-      (list flymake-rest-source
+    (let ((loc (cons (car (flymake-diag-region flymake-collection-source .line .column))
+                     (cdr (flymake-diag-region flymake-collection-source .endLine .endColumn)))))
+      (list flymake-collection-source
             (car loc)
             (cdr loc)
             (pcase .level
               ("error" :error)
               ("warning" :warning)
               ((or "info" "style" _) :note))
-            (concat (propertize (format "SC%s" .code) 'face 'flymake-rest-diag-id) " " .message)))))
+            (concat (propertize (format "SC%s" .code) 'face 'flymake-collection-diag-id) " " .message)))))
 
-(provide 'flymake-rest-shellcheck)
+(provide 'flymake-collection-shellcheck)
 
-;;; flymake-rest-shellcheck.el ends here
+;;; flymake-collection-shellcheck.el ends here

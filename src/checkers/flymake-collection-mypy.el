@@ -1,4 +1,4 @@
-;;; flymake-rest-mypy.el --- MyPy diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-mypy.el --- MyPy diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -27,13 +27,13 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-mypy "flymake-rest-mypy")
-(flymake-rest-define-rx flymake-rest-mypy
+;;;###autoload (autoload 'flymake-collection-mypy "flymake-collection-mypy")
+(flymake-collection-define-rx flymake-collection-mypy
   "Mypy syntax and type checker.  Requires mypy>=0.580.
 
 See URL `http://mypy-lang.org/'."
@@ -49,12 +49,12 @@ See URL `http://mypy-lang.org/'."
                  "--no-color-output"
                  "--show-absolute-path"
                  "--show-error-codes"
-                 flymake-rest-temp-file)
+                 flymake-collection-temp-file)
   :regexps
   ((error   bol (file-name) ":" line ":" column ": error: "   (message) eol)
    (warning bol (file-name) ":" line ":" column ": warning: " (message) eol)
    (note    bol (file-name) ":" line ":" column ": note: "    (message) eol)))
 
-(provide 'flymake-rest-mypy)
+(provide 'flymake-collection-mypy)
 
-;;; flymake-rest-mypy.el ends here
+;;; flymake-collection-mypy.el ends here

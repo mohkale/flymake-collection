@@ -1,5 +1,5 @@
-EMACS ?= emacs
-SRC   := *.el checkers/*.el
+SRC   := src/*.el src/checkers/*.el
+EMACS ?= emacs --eval '(add-to-list (quote load-path) (concat default-directory "src/"))'
 
 .PHONY: lint
 lint: compile checkdoc
@@ -27,5 +27,5 @@ compile: ## Check for byte-compiler errors
 
 .PHONY: clean
 clean: ## Remove build artifacts
-	@echo "[clean]" *.elc checkers/*.elc
-	@rm -f *.elc checkers/*.elc
+	@echo "[clean]" $(subst .el,.elc,$(SRC))
+	@rm -f $(subst .el,.elc,$(SRC))

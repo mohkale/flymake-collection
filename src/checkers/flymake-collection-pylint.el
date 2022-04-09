@@ -1,4 +1,4 @@
-;;; flymake-rest-pylint.el --- Pylint diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-pylint.el --- Pylint diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -27,13 +27,13 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-pylint "flymake-rest-pylint")
-(flymake-rest-define-enumerate flymake-rest-pylint
+;;;###autoload (autoload 'flymake-collection-pylint "flymake-collection-pylint")
+(flymake-collection-define-enumerate flymake-collection-pylint
   "A Python syntax and style checker using Pylint.
 
 This syntax checker requires Pylint 1.0 or newer.
@@ -42,7 +42,7 @@ See URL `https://www.pylint.org/'."
   :title "pylint"
   :pre-let ((python-exec (executable-find "python3"))
             (pylint-exec (executable-find "pylint"))
-            (file-name (or (buffer-file-name flymake-rest-source)
+            (file-name (or (buffer-file-name flymake-collection-source)
                            "_")))
   :pre-check
   (progn
@@ -59,13 +59,13 @@ See URL `https://www.pylint.org/'."
                  file-name)
   :generator
   (car
-   (flymake-rest-parse-json
+   (flymake-collection-parse-json
     (buffer-substring-no-properties
      (point-min) (point-max))))
   :enumerate-parser
   (let-alist it
-    (let ((loc (flymake-diag-region flymake-rest-source .line .column)))
-      (list flymake-rest-source
+    (let ((loc (flymake-diag-region flymake-collection-source .line .column)))
+      (list flymake-collection-source
             (car loc)
             (cdr loc)
             (pcase .type
@@ -73,8 +73,8 @@ See URL `https://www.pylint.org/'."
               ((or "fatal" "error") :error)
               ((or "warning" "refactor" "convention") :warning)
               ((or "info" _) :note))
-            (concat (propertize .message-id 'face 'flymake-rest-diag-id) " " .message)))))
+            (concat (propertize .message-id 'face 'flymake-collection-diag-id) " " .message)))))
 
-(provide 'flymake-rest-pylint)
+(provide 'flymake-collection-pylint)
 
-;;; flymake-rest-pylint.el ends here
+;;; flymake-collection-pylint.el ends here

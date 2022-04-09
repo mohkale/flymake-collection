@@ -1,4 +1,4 @@
-;;; flymake-rest-yamllint.el --- Yamllint diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-yamllint.el --- Yamllint diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -29,10 +29,10 @@
 (require 'flymake)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-yamllint "flymake-rest-yamllint")
-(flymake-rest-define-rx flymake-rest-yamllint
+;;;###autoload (autoload 'flymake-collection-yamllint "flymake-collection-yamllint")
+(flymake-collection-define-rx flymake-collection-yamllint
   "A YAML syntax checker using YAMLLint.
 
 See URL `https://github.com/adrienverge/yamllint'."
@@ -46,6 +46,6 @@ See URL `https://github.com/adrienverge/yamllint'."
   ((error   bol "stdin:" line ":" column ": " "[error] "   (message) eol)
    (warning bol "stdin:" line ":" column ": " "[warning] " (message) eol)))
 
-(provide 'flymake-rest-yamllint)
+(provide 'flymake-collection-yamllint)
 
-;;; flymake-rest-yamllint.el ends here
+;;; flymake-collection-yamllint.el ends here

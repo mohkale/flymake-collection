@@ -1,4 +1,4 @@
-;;; flymake-rest-eslint.el --- ESLint diagnostic function -*- lexical-binding: t -*-
+;;; flymake-collection-eslint.el --- ESLint diagnostic function -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Mohsin Kaleem
 
@@ -27,13 +27,13 @@
 ;;; Code:
 
 (require 'flymake)
-(require 'flymake-rest)
+(require 'flymake-collection)
 
 (eval-when-compile
-  (require 'flymake-rest-define))
+  (require 'flymake-collection-define))
 
-;;;###autoload (autoload 'flymake-rest-eslint "flymake-rest-eslint")
-(flymake-rest-define-enumerate flymake-rest-eslint
+;;;###autoload (autoload 'flymake-collection-eslint "flymake-collection-eslint")
+(flymake-collection-define-enumerate flymake-collection-eslint
   "A Javascript syntax and style checker using eslint.
 
 See URL `https://eslint.org/'."
@@ -46,25 +46,25 @@ See URL `https://eslint.org/'."
   `(,eslint-exec
     "--format=json"
     "--stdin"
-    ,@(when-let ((file (buffer-file-name flymake-rest-source)))
+    ,@(when-let ((file (buffer-file-name flymake-collection-source)))
         (list "--stdin-filename" file)))
   :generator
   (alist-get
    'messages
    (caar
-    (flymake-rest-parse-json
+    (flymake-collection-parse-json
      (buffer-substring-no-properties
       (point-min) (point-max)))))
   :enumerate-parser
   (let-alist it
-    (let* ((start-loc (flymake-diag-region flymake-rest-source .line .column))
+    (let* ((start-loc (flymake-diag-region flymake-collection-source .line .column))
            (loc (cons (car start-loc)
                       (cdr
                        (if (and .endLine .endColumn)
-                           (flymake-diag-region flymake-rest-source
+                           (flymake-diag-region flymake-collection-source
                                                 .endLine (1- .endColumn))
                          start-loc)))))
-      (list flymake-rest-source
+      (list flymake-collection-source
             (car loc)
             (cdr loc)
             (pcase .severity
@@ -73,6 +73,6 @@ See URL `https://eslint.org/'."
               (_ :note))
             (concat "[" .ruleId "] " .message)))))
 
-(provide 'flymake-rest-eslint)
+(provide 'flymake-collection-eslint)
 
-;;; flymake-rest-eslint.el ends here
+;;; flymake-collection-eslint.el ends here
