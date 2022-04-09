@@ -37,7 +37,6 @@
   "A Haskell syntax and style checker using hlint.
 
 See URL `https://github.com/ndmitchell/hlint'."
-  :title "hlint"
   :pre-let ((hlint-exec (executable-find "hlint")))
   :pre-check (unless hlint-exec
                (error "Cannot find hlint executable"))

@@ -1,0 +1,52 @@
+---
+checker: flymake-collection-hlint
+tests:
+  - name: no-lints
+    file: |
+      nolint f g = f . g
+    lints: []
+  - name: suggestions-and-warnings
+    file: |
+      module Test where
+
+      -- Suggestion
+      suggestion f g = (f . g)
+
+      -- Warning
+      warning f g = f (\x y -> g x y)
+    lints:
+      - point: [4, 17]
+        level: note
+        message: |-
+          Redundant bracket
+          Found:
+            (f . g)
+          Perhaps:
+            f . g
+      - point: [7, 17]
+        level: warning
+        message: |-
+          Avoid lambda
+          Found:
+            \ x y -> g x y
+          Perhaps:
+            g
+  - name: no-lints
+    file: |
+      module Test where
+
+      -- Suggestion/Warning
+      suggestion f g = (f . g)
+      warning f g = f (\x y -> g x y)
+
+      -- Error
+      error f = f (
+    lints:
+      - point: [8, 0]
+        level: error
+        message: |-
+          Parse error
+          Found:
+              -- Error
+              error f = f (
+            > 
