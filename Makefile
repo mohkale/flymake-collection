@@ -25,6 +25,17 @@ compile: ## Check for byte-compiler errors
 	        | grep . && exit 1 || true ;\
 	done
 
+.PHONY: test
+test: ## Run all defined test cases.
+	@echo "[test] Running all test cases"
+	@docker build  -t flymake-collection-test ./tests/checkers
+	@docker run \
+	  --rm \
+	  --volume "$$(pwd)":/src:ro \
+	  --volume "$$(pwd)/tests/checkers":/test:ro \
+	  flymake-collection-test \
+	  sh -c 'find /test/test-cases/ -iname \*.yml | parallel -I{} chronic /test/run-test-case {}'
+
 .PHONY: clean
 clean: ## Remove build artifacts
 	@echo "[clean]" $(subst .el,.elc,$(SRC))

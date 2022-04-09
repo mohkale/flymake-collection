@@ -1,0 +1,166 @@
+#!/usr/bin/env python3.8
+"""Test case runner for flymake-collection.
+"""
+import json
+import logging
+import pathlib
+import subprocess
+import sys
+import tempfile
+from dataclasses import dataclass
+from typing import List, Optional, Tuple
+
+import yaml
+
+
+@dataclass
+class TestLint:
+    """A flymake diagnostic."""
+
+    point: Tuple[int, int]  # Line and column
+    level: str
+    message: str
+
+
+@dataclass
+class TestCase:
+    """A test case called `name`, given `file` that should give back `lints`."""
+
+    name: str
+    file: str
+    lints: List[TestLint]
+
+    def __post_init__(self):
+        self.lints = [TestLint(**it) for it in self.lints]
+
+    def run(self, checker: str) -> bool:
+        with tempfile.NamedTemporaryFile("w") as file:
+            file.write(self.file)
+            file.flush()
+            actual_lints = run_flymake(pathlib.Path(file.name), checker)
+            if actual_lints is None:
+                return False
+
+        failed = False
+        for lint in self.lints:
+            try:
+                pos = actual_lints.index(lint)
+            except ValueError:
+                logging.error("Expected to encounter lint: %s", lint)
+                failed = True
+            else:
+                actual_lints.pop(pos)
+        for lint in actual_lints:
+            logging.error("Encountered unexpected lint: %s", lint)
+            failed = True
+        return not failed
+
+
+@dataclass
+class TestConfig:
+    checker: str
+    tests: List[TestCase]
+
+    def __post_init__(self):
+        self.tests = [TestCase(**it) for it in self.tests]
+
+
+def run_flymake(src: pathlib.Path, checker: str) -> Optional[List[TestLint]]:
+    with tempfile.NamedTemporaryFile("w") as script, tempfile.NamedTemporaryFile(
+        "r"
+    ) as out:
+        script.write(
+            f"""
+(require 'flymake)
+(require 'json)
+
+(add-to-list 'load-path "/src/src")
+(add-to-list 'load-path "/src/src/checkers")
+(require (intern "{checker}") "{checker}.el")
+
+(setq src (find-file-literally "{src}")
+      out (find-file "{out.name}"))
+
+(defun column-number (point)
+  "Returns the column number at POINT."
+  (interactive)
+  (save-excursion
+    (goto-char point)
+    (current-column)))
+
+(with-current-buffer src
+  ({checker}
+    (lambda (diags)
+      (with-current-buffer out
+        (cl-loop for diag in diags
+                 collect
+                 (insert
+                  (json-encode
+                   `((point . ,(with-current-buffer src
+                                 (let ((beg (flymake--diag-beg diag)))
+                                   (list (line-number-at-pos beg)
+                                         (column-number beg)))))
+                     (level . ,(flymake--diag-type diag))
+                     (message . ,(substring-no-properties (flymake--diag-text diag)))))
+                  "\n"))
+         (save-buffer))))
+
+;; Block until the checker process finishes.
+(while flymake-collection-define--procs
+  (sleep-for 0.25)))
+        """
+        )
+        script.flush()
+        proc = subprocess.run(
+            ["emacs", "-Q", "--script", script.name],
+            capture_output=True,
+            encoding="utf-8",
+        )
+        if proc.returncode != 0:
+            logging.error("Failed to run checker using emacs")
+            logging.error("Emacs exited with stderr: %s", proc.stderr)
+            return None
+
+        lints = []
+        for line in out:
+            if line.strip() == "":
+                continue
+            lints.append(TestLint(**json.loads(line)))
+        return lints
+
+
+def main(args, vargs, parser) -> bool:
+    failed = False
+    logging.info("Loading test config file=%s", args.test)
+    with args.test.open("r") as test_file:
+        cfg_obj = yaml.load(test_file, Loader=yaml.SafeLoader)
+        try:
+            cfg = TestConfig(**cfg_obj)
+        except ValueError:
+            logging.exception("Failed to read test configuration")
+            return False
+
+        logging.info("Running tests with checker=%s", cfg.checker)
+        for i, test in enumerate(cfg.tests):
+            logging.info("Running test case %d name=%s", i, test.name)
+            if not test.run(cfg.checker):
+                failed = True
+
+    return not failed
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "test", type=pathlib.Path, help="Path to test cases config file"
+    )
+
+    args = parser.parse_args()
+    vargs = vars(args)
+
+    logging.basicConfig(level=logging.DEBUG)
+
+    sys.exit(0 if main(args, vargs, parser) else 1)

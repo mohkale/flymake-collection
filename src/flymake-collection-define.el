@@ -293,6 +293,9 @@ exit status %d\nStderr: %s"
                      ;; Finished linting, cleanup any temp-files and then kill
                      ;; the process buffer.
                      ,@cleanup-form
+                     (when (eq (plist-get flymake-collection-define--procs ',name)
+                               ,proc-symb)
+                       (cl-remf flymake-collection-define--procs ',name))
                      (kill-buffer (process-buffer ,proc-symb)))))))
              ;; Push the new-process to the process to the process alist.
              (setq flymake-collection-define--procs

@@ -1,0 +1,29 @@
+---
+checker: flymake-collection-pylint
+tests:
+  - name: no-lints
+    file: |
+      """A test case with no output from pylint."""
+
+      print("hello world")
+    lints: []
+  - name: notes
+    file: |
+      """A test case with a warning lint."""
+
+      print(f"hello world")
+      print(f"hello world")
+    lints:
+      - point: [3, 5]
+        level: warning
+        message: W1309 Using an f-string that does not have any interpolated variables (pylint)
+      - point: [4, 5]
+        level: warning
+        message: W1309 Using an f-string that does not have any interpolated variables (pylint)
+  - name: syntax-error
+    file: |
+      definitely should not work
+    lints:
+      - point: [1, 11]
+        level: error
+        message: E0001 invalid syntax (<unknown>, line 1) (pylint)
