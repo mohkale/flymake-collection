@@ -42,6 +42,7 @@
     (c++-mode
      flymake-rest-clang
      (flymake-rest-gcc :disabled t))
+    (haskell-mode flymake-rest-hlint)
     (js-mode flymake-rest-eslint)
     (js2-mode flymake-rest-eslint)
     (typescript-mode flymake-rest-eslint)
