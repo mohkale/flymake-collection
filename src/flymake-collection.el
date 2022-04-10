@@ -1,4 +1,4 @@
-;;; flymake-collection.el --- Core features for flymake -*- lexical-binding: t -*-
+;;; flymake-collection.el --- Collection of checkers for flymake, bringing flymake to the level of flycheck -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2021 Mohsin Kaleem
 

@@ -14,7 +14,8 @@ for use with flymake, give users the tools to easily define new syntax checkers 
 help selectively enable or disable diagnostic-functions based on major-modes.
 
 The goal of this project is to make the transition from flycheck to flymake as easy
-as possible.
+as possible, and to act as a catching ground for all the checkers that don't already
+have a flymake backend available.
 
 * Table of Contents                                                     :TOC:
 - [[#installation][Installation]]
@@ -22,6 +23,10 @@ as possible.
   - [[#from-melpa][From MELPA]]
   - [[#configurations][Configurations]]
 - [[#contributing][Contributing]]
+- [[#related-packages][Related Packages]]
+  - [[#flymake-flycheck][flymake-flycheck]]
+  - [[#flymake-quickdef][flymake-quickdef]]
+  - [[#flymake-proselint-flymake-shellcheck-etc][flymake-proselint, flymake-shellcheck, etc.]]
 - [[#appendix][Appendix]]
 
 * Installation
@@ -119,16 +124,62 @@ as possible.
      ~flymake-collection-config~ using the ~flymake-collection-change-checker~ command.
 
 * Contributing
-  Please do!. There are more linters out there than I have the time to explore, if
-  you'd like to add support for a new linter or contribute improvements to an
+  Please do!. There are more checkers out there than I have the time to explore, if
+  you'd like to add support for a new checker or contribute improvements to an
   existing one, we'd be more than happy to accept.
 
-  When contributing please describe the exact version of the linter you're adding and
-  supply a sample file which triggers all the different lint types (info, error,
-  warning) supported by your linter.
+  Tests can be found in [[file:tests/checkers/]]. The [[file:tests/checkers/installers/][installers]] directory is where bash
+  scripts are setup to install the checker on ~ubuntu:20.04~. Actual [[file:tests/checkers/test-cases/][test-cases]] are
+  declarative YAML configurations that run a given checker function on a given file
+  with the latest version of flymake and your local ~flymake-collection~ repository and
+  then examines the results. See [[file:tests/checkers/test-cases/pylint.yml][pylint.yml]] for an example.
+  *Please supply installer and test-cases for any contributed checkers as well.*
+
+  To run locally you can use the supplied Makefile with ~make lint~ compiling all your
+  local elisp files and ~make test~ running the test-cases within docker. If you do not
+  have docker setup the CI/CD pipeline on this repo will automatically lint and test
+  when you open a PR.
+
+* Related Packages
+** [[https://github.com/purcell/flymake-flycheck][flymake-flycheck]]
+   Provides a bridge between flymake and flycheck. It allows you to use all of the
+   checker functions already exposed through flycheck with flymake. This would be
+   useful if you're intent on using both flycheck and flymake or need to use flymake
+   but require a checker that's only available with flycheck.
+
+   ~flymake-collection~ doesn't bridge flycheck and flymake, it re-implements several
+   flycheck checkers as flymake compatible ones. It also provides helpers to allow
+   defining checkers as easily as flycheck does (for example flymake-collection
+   provides a parallel to the convenient ~:error-patterns~ option of
+   ~flycheck-define-checker~). In the end ~flymake-collection~ has no dependency on
+   flycheck where as ~flymake-flycheck~ does.
+
+** [[https://github.com/karlotness/flymake-quickdef][flymake-quickdef]]
+   This was the initial package I adapted into ~flymake-collection-define~ because I
+   needed extra functionality for pylint. It provides a helper macro to define
+   backend functions for various checkers. If you prefer a more fine grained
+   configuration or just need a standalone checker for your own use-cases it may be
+   easier to define one using this instead of installing ~flymake-collection~.
+
+   *Note*: All the features of ~flymake-quickdef~ (as of version 1.0.0) is also
+   supported by ~flymake-collection~. We also support some extra features such as
+   linting a file in the same directory as an existing file.
+
+** [[https://git.sr.ht/~manuel-uberti/flycheck-proselint][flymake-proselint]], [[https://github.com/federicotdn/flymake-shellcheck][flymake-shellcheck]], etc.
+   These packages provide standalone backend functions for specific checkers. This
+   lets you have a more modular, /what-you-need is what-you-install/ setup where you
+   only install flymake backends for the checkers you actually intend to use. If you
+   believe ~flymake-collection~ to be too large for your liking I'd recommend deferring
+   to one of these existing packages.
+
+   ~flymake-collection~ exists because I didn't want to have to setup and configure all
+   of these different backends for all the languages I use. If you'd prefer to
+   install one package and have linting work across a /collection/ of different
+   languages and possible checkers then ~flymake-collection~ may be more what you're
+   looking for.
 
 * Appendix                                                          :ARCHIVE:
-# LocalWords: flymake linter
+# LocalWords: flymake linter flycheck
 
 # Local Variables:
 # eval: (toc-org-mode 1)
