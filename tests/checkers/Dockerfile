@@ -18,7 +18,7 @@ RUN apt-get update && \
       libjansson4 \
       libjansson-dev \
       git && \
-    git clone -b emacs-28 --single-branch git://git.savannah.gnu.org/emacs.git . && \
+    git clone -b "${EMACS_BRANCH:-emacs-28}" --single-branch git://git.savannah.gnu.org/emacs.git . && \
     sed -i 's/# deb-src/deb-src/' /etc/apt/sources.list && \
     apt-get update && \
     apt-get build-dep -y emacs && \

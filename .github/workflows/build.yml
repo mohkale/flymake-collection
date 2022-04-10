@@ -1,0 +1,36 @@
+---
+name: build
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+  schedule:
+    - cron: "0 13 * * *"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs_branch: [emacs-28, master]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run test suite
+        run: make test EMACS_BRANCH="${{ matrix.emacs_branch }}"
+
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs_version: [28.1, snapshot]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: purcell/setup-emacs@master
+        with:
+          version: ${{ matrix.emacs_version }}
+      - name: Lint elisp
+        run: make lint
