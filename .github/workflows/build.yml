@@ -3,9 +3,9 @@ name: build
 
 on:
   push:
-    branches: master
+    branches: release
   pull_request:
-    branches: master
+    branches: release
   schedule:
     - cron: "0 13 * * *"
 
