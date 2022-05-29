@@ -2,8 +2,8 @@
 #+AUTHOR: Mohsin Kaleem
 
 #+html: <p align="right">
-#+html: <a href="https://github.com/mohkale/flymake-collection" alt="lint" style="margin-right: 4px;"><img src="https://github.com/mohkale/flymake-collection/workflows/lint/badge.svg" /></a>
-#+html: <a href="https://github.com/mohkale/flymake-collection" alt="lint" style="margin-right: 4px;"><img src="https://github.com/mohkale/flymake-collection/workflows/test/badge.svg" /></a>
+#+html: <a href="https://github.com/mohkale/flymake-collection" alt="lint" style="margin-right: 4px;"><img src="https://github.com/mohkale/flymake-collection/actions/workflows/lint.yml/badge.svg" /></a>
+#+html: <a href="https://github.com/mohkale/flymake-collection" alt="lint" style="margin-right: 4px;"><img src="https://github.com/mohkale/flymake-collection/actions/workflows/test.yml/badge.svg" /></a>
 #+html: <a href="https://melpa.org/#/flymake-collection"><img align="center" alt="MELPA" src="https://melpa.org/packages/flymake-collection-badge.svg"/></a>
 #+html: </p>
 
