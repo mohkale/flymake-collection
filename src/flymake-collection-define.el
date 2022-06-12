@@ -147,7 +147,7 @@ optional arguments such as PRE-LET. This includes:
   The the buffer where the syntax check originally began.
 * flymake-collection-temp-file
   A temporary file where the contents of the current buffer were
-  written (only if WRITE-TYPE is 'file)
+  written (only if WRITE-TYPE is \\='file)
 * flymake-collection-temp-dir
   The dirname of flymake-collection-temp-file.
 
@@ -161,16 +161,16 @@ diagnostic which is then provided to `flymake'. TITLE if provided is
 used to suffix the message for each diagnostic.
 
 WRITE-TYPE specifies how the process for a syntax check should recieve
-the input. It should one of 'pipe or 'file (defaulting to 'pipe).
-When set to 'file a temporary file will ve created, copying the contents
+the input. It should one of \\='pipe or \\='file (defaulting to \\='pipe).
+When set to \\='file a temporary file will ve created, copying the contents
 of the `current-buffer'. The variable flymake-collection-temp-file and
 flymake-collection-temp-dir will be bound in the body of NAME and provide
 access to this temp-file.
-When set to 'pipe, all of the `current-buffer' will be passed to the
+When set to \\='pipe, all of the `current-buffer' will be passed to the
 process on its standard input stream after it has begun.
 
 SOURCE-INPLACE determines whether to also create a temporary directory
-for a temporary file (when using a WRITE-TYPE of 'file) or whether to
+for a temporary file (when using a WRITE-TYPE of \\='file) or whether to
 place the temporary file in the same directory as the file being checked.
 This can be useful if the syntax checker also resolves imports or packages
 and thus needs to be in the same directory. This is disabled by default
@@ -192,7 +192,7 @@ used to start the checker process. It should be suitable for use as the
 ERROR-PARSER is a lisp-form that should, each time it is evaluated,
 return the next diagnostic from the checker output. The result should be
 a value that can be passed to the `flymake-make-diagnostic' function. Once
-there're no more diagnostics to parse this form should evaluate to nil."
+there are no more diagnostics to parse this form should evaluate to nil."
   (declare (indent defun) (doc-string 2))
   (unless lexical-binding
     (error "Need lexical-binding for flymake-collection-define (%s)" name))
