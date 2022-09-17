@@ -1,0 +1,29 @@
+---
+checker: flymake-collection-flake8
+tests:
+  - name: no-lints
+    file: |
+      """A test case with no output from flake8."""
+
+      print("hello world")
+    lints: []
+  - name: notes
+    file: |
+      """A test case with a warning lint."""
+
+      print(f"hello world")
+      print(f"hello world")
+    lints:
+      - point: [3, 6]
+        level: warning
+        message: F541 f-string is missing placeholders (flake8)
+      - point: [4, 6]
+        level: warning
+        message: F541 f-string is missing placeholders (flake8)
+  - name: syntax-error
+    file: |
+      definitely should not work
+    lints:
+      - point: [1, 11]
+        level: warning
+        message: "E999 SyntaxError: invalid syntax (flake8)"
