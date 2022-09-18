@@ -48,9 +48,13 @@ See URL `https://flake8.readthedocs.io/'."
   :pre-check (unless flake8-exec
                (error "Cannot find flake8 executable"))
   :write-type 'pipe
-  :command `(,flake8-exec ,@flymake-collection-flake8-args "-")
+  :command `(,flake8-exec
+             ,@flymake-collection-flake8-args
+             ,@(when-let ((file (buffer-file-name flymake-collection-source)))
+                 (list "--stdin-display-name" file))
+             "-")
   :regexps
-  ((warning bol "stdin:" line ":" column ": " (id (one-or-more alnum)) " " (message) eol)))
+  ((warning bol (file-name) ":" line ":" column ": " (id (one-or-more alnum)) " " (message) eol)))
 
 (provide 'flymake-collection-flake8)
 
