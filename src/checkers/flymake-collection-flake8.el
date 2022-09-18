@@ -32,6 +32,11 @@
 (eval-when-compile
   (require 'flymake-collection-define))
 
+(defcustom flymake-collection-flake8-args nil
+  "Command line arguments always passed to `flymake-collection-flake8'."
+  :type '(repeat string)
+  :group 'flymake-collection)
+
 ;;;###autoload (autoload 'flymake-collection-flake8 "flymake-collection-flake8")
 (flymake-collection-define-rx flymake-collection-flake8
   "A Python syntax and style checker using Flake8.
@@ -43,7 +48,7 @@ See URL `https://flake8.readthedocs.io/'."
   :pre-check (unless flake8-exec
                (error "Cannot find flake8 executable"))
   :write-type 'pipe
-  :command (list flake8-exec "-")
+  :command `(,flake8-exec ,@flymake-collection-flake8-args "-")
   :regexps
   ((warning bol "stdin:" line ":" column ": " (id (one-or-more alnum)) " " (message) eol)))
 
