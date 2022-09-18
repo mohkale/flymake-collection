@@ -38,7 +38,8 @@
   '((python-mode
      flymake-collection-pycodestyle
      (flymake-mypy :disabled t)
-     (flymake-collection-pylint :disabled t))
+     (flymake-collection-pylint :disabled t)
+     (flymake-collection-flake8 :disabled t))
     (awk-mode flymake-collection-awk-gawk)
     (c-mode
      flymake-collection-clang
