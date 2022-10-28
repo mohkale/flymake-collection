@@ -32,6 +32,16 @@
 (eval-when-compile
   (require 'flymake-collection-define))
 
+(defcustom flymake-collection-mypy-args
+  '("--show-column-numbers"
+    "--no-error-summary"
+    "--no-color-output"
+    "--show-absolute-path"
+    "--show-error-codes")
+  "Command line arguments always passed to `flymake-collection-mypy'."
+  :type 'list
+  :group 'flymake-collection)
+
 (defcustom flymake-collection-mypy-root-files
   '("mypy.ini" "pyproject.toml" "setup.cfg")
   "Files used to guess the `default-directory' for invoking mypy.
@@ -64,13 +74,15 @@ See URL `http://mypy-lang.org/'."
                (error "Cannot find mypy executable"))
   :write-type 'file
   :source-inplace t
-  :command (list mypy-exec
-                 "--show-column-numbers"
-                 "--no-error-summary"
-                 "--no-color-output"
-                 "--show-absolute-path"
-                 "--show-error-codes"
-                 flymake-collection-temp-file)
+  :command `(,mypy-exec
+             ,@flymake-collection-mypy-args
+             ,@(if-let ((source-file (buffer-file-name
+                                      flymake-collection-source))
+                        ((file-exists-p source-file)))
+                   (list
+                    "--shadow-file" source-file flymake-collection-temp-file
+                    source-file)
+                 (list flymake-collection-temp-file)))
   :regexps
   ((error   bol (file-name) ":" line ":" column ": error: "   (message) eol)
    (warning bol (file-name) ":" line ":" column ": warning: " (message) eol)
