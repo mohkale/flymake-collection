@@ -84,7 +84,7 @@ doesn't exist: %s" dir))
      (let ((temporary-file-directory ,temp-dir)
            (basename (file-name-nondirectory (or (buffer-file-name)
                                                  (buffer-name)))))
-       (make-temp-file ".flymake_" nil (concat "_" basename))))))
+       (make-temp-file "flymake_" nil (concat "_" basename))))))
 
 (defmacro flymake-collection-define--parse-diags
     (title proc-symb diags-symb current-diag-symb source-symb error-parser)
