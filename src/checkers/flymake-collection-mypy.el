@@ -84,9 +84,12 @@ See URL `http://mypy-lang.org/'."
                     source-file)
                  (list flymake-collection-temp-file)))
   :regexps
-  ((error   bol (file-name) ":" line ":" column ": error: "   (message) eol)
-   (warning bol (file-name) ":" line ":" column ": warning: " (message) eol)
-   (note    bol (file-name) ":" line ":" column ": note: "    (message) eol)))
+  ((error   bol (file-name) ":" line ":" column ": error: "
+            (message) "  [" (id (one-or-more not-newline)) "]" eol)
+   (warning bol (file-name) ":" line ":" column ": warning: "
+            (message) "  [" (id (one-or-more not-newline)) "]" eol)
+   (note    bol (file-name) ":" line ":" column ": note: "
+            (message) "  [" (id (one-or-more not-newline)) "]" eol)))
 
 (provide 'flymake-collection-mypy)
 
