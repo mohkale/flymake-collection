@@ -32,13 +32,34 @@
 (eval-when-compile
   (require 'flymake-collection-define))
 
+(defcustom flymake-collection-mypy-root-files
+  '("mypy.ini" "pyproject.toml" "setup.cfg")
+  "Files used to guess the `default-directory' for invoking mypy.
+See `flymake-collection-mypy--default-directory' for details."
+  :type 'list
+  :group 'flymake-collection)
+
+(defun flymake-collection-mypy--default-directory (buffer)
+  "Find a parent directory of `BUFFER' buffer containing mypy config."
+  (let* ((start (if-let ((file (buffer-file-name buffer)))
+                    (file-name-directory file)
+                  (or (buffer-local-value 'default-directory buffer)
+                      default-directory)))
+         (regex (regexp-opt flymake-collection-mypy-root-files))
+         (root (locate-dominating-file
+                start (lambda (dir) (directory-files dir nil regex t)))))
+    (flymake-log :debug "Working dir: %s" root)
+    root))
+
 ;;;###autoload (autoload 'flymake-collection-mypy "flymake-collection-mypy")
 (flymake-collection-define-rx flymake-collection-mypy
   "Mypy syntax and type checker.  Requires mypy>=0.580.
 
 See URL `http://mypy-lang.org/'."
   :title "mypy"
-  :pre-let ((mypy-exec (executable-find "mypy")))
+  :pre-let ((mypy-exec (executable-find "mypy"))
+            (default-directory (flymake-collection-mypy--default-directory
+                                flymake-collection-source)))
   :pre-check (unless mypy-exec
                (error "Cannot find mypy executable"))
   :write-type 'file
