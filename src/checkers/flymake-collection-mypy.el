@@ -39,27 +39,50 @@
     "--show-absolute-path"
     "--show-error-codes")
   "Command line arguments always passed to `flymake-collection-mypy'."
-  :type 'list
+  :type '(repeat (string :tag "Arg"))
   :group 'flymake-collection)
 
-(defcustom flymake-collection-mypy-root-files
-  '("mypy.ini" "pyproject.toml" "setup.cfg")
-  "Files used to guess the `default-directory' for invoking mypy.
-See `flymake-collection-mypy--default-directory' for details."
-  :type 'list
-  :group 'flymake-collection)
+(defcustom flymake-collection-mypy-project-root
+  '(("mypy.ini" "project.toml" "setup.cfg") project-root default-directory)
+  "Method to set project root."
+  :type '(repeat :tag "Run mypy from the first choice that succeeds"
+                 (choice (const :tag "The buffer default-directory" default-directory)
+                         (const :tag "The current project root" project-root)
+                         (directory :tag "A specific directory")
+                         (repeat :tag "The first ancestor directory containing"
+                                 :value ("mypy.ini" "pyproject.toml" "setup.cfg")
+                                 (string :tag "File name"))))
+  :group 'flymake-collection
+  :safe 'listp)
 
-(defun flymake-collection-mypy--default-directory (buffer)
-  "Find a parent directory of `BUFFER' buffer containing mypy config."
+(defun flymake-collection-mypy--locate-dominating-files (buffer files)
+  "Find ancestor directory of `BUFFER' containing any of `FILES'."
   (let* ((start (if-let ((file (buffer-file-name buffer)))
                     (file-name-directory file)
-                  (or (buffer-local-value 'default-directory buffer)
-                      default-directory)))
-         (regex (regexp-opt flymake-collection-mypy-root-files))
+                  (buffer-local-value 'default-directory buffer)))
+         (regex (mapconcat 'regexp-quote files "\\|"))
          (root (locate-dominating-file
                 start (lambda (dir) (directory-files dir nil regex t)))))
-    (flymake-log :debug "Working dir: %s" root)
     root))
+
+(defun flymake-collection-mypy--default-directory (buffer)
+  "Find a directory from which to run mypy to check `BUFFER'.
+Try each method specified in `flymake-collection-mypy-project-root' in
+order and returns the first non-nil result."
+  (cl-dolist (spec flymake-collection-mypy-project-root)
+    (when-let
+        ((res (cond
+               ((eq spec 'default-directory)
+                (buffer-local-value 'default-directory buffer))
+               ((eq spec 'project-root)
+                (when-let ((proj (project-current)))
+                  (project-root proj)))
+               ((listp spec)
+                (flymake-collection-mypy--locate-dominating-files
+                 buffer spec))
+               ((stringp spec) spec))))
+      (cl-return res))))
+
 
 ;;;###autoload (autoload 'flymake-collection-mypy "flymake-collection-mypy")
 (flymake-collection-define-rx flymake-collection-mypy
@@ -70,8 +93,12 @@ See URL `http://mypy-lang.org/'."
   :pre-let ((mypy-exec (executable-find "mypy"))
             (default-directory (flymake-collection-mypy--default-directory
                                 flymake-collection-source)))
-  :pre-check (unless mypy-exec
-               (error "Cannot find mypy executable"))
+  :pre-check (progn
+               (flymake-log :debug "Working dir is %s" default-directory)
+               (unless mypy-exec
+                 (error "Cannot find mypy executable"))
+               (unless default-directory
+                 (error "Default dir is nil: check `flymake-collection-mypy-project-root'")))
   :write-type 'file
   :source-inplace t
   :command `(,mypy-exec
@@ -85,11 +112,11 @@ See URL `http://mypy-lang.org/'."
                  (list flymake-collection-temp-file)))
   :regexps
   ((error   bol (file-name) ":" line ":" column ": error: "
-            (message) "  [" (id (one-or-more not-newline)) "]" eol)
+            (message) (opt "  [" (id (one-or-more alpha)) "]") eol)
    (warning bol (file-name) ":" line ":" column ": warning: "
-            (message) "  [" (id (one-or-more not-newline)) "]" eol)
+            (message) (opt "  [" (id (one-or-more alpha)) "]") eol)
    (note    bol (file-name) ":" line ":" column ": note: "
-            (message) "  [" (id (one-or-more not-newline)) "]" eol)))
+            (message) (opt "  [" (id (one-or-more alpha)) "]") eol)))
 
 (provide 'flymake-collection-mypy)
 
