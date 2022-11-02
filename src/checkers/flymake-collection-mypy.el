@@ -26,6 +26,7 @@
 
 ;;; Code:
 
+(require 'project)
 (require 'flymake)
 (require 'flymake-collection)
 
