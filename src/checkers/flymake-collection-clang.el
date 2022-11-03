@@ -37,7 +37,7 @@
   "Command line arguments always passed to `flymake-collection-clang'.")
 
 (defvar flymake-collection-clang-include-path nil
-  "Default include path for gcc in `flymake-collection-clang'.")
+  "Default include path for clang in `flymake-collection-clang'.")
 
 ;;;###autoload (autoload 'flymake-collection-clang "flymake-collection-clang")
 (flymake-collection-define-rx flymake-collection-clang
@@ -71,6 +71,6 @@ See URL `http://clang.llvm.org/'."
    (warning bol "<stdin>:" line ":" column ": " "warning"            ": " (message) eol)
    (note    bol "<stdin>:" line ":" column ": " "note"               ": " (message) eol)))
 
-(provide 'flymake-collection-gcc)
+(provide 'flymake-collection-clang)
 
 ;;; flymake-collection-clang.el ends here
