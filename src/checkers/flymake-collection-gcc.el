@@ -34,12 +34,12 @@
 (defcustom flymake-collection-gcc-args
   '("-pedantic" "-pedantic-errors")
   "Command line arguments always passed to `flymake-collection-gcc'."
-  :type 'list
+  :type '(repeat :tag "Arguments" (string :tag "Argument"))
   :group 'flymake-collection)
 
 (defcustom flymake-collection-gcc-include-path nil
   "Default include path for gcc in `flymake-collection-gcc'."
-  :type 'list
+  :type '(repeat :tag "Paths" (string :tag "Path"))
   :group 'flymake-collection)
 
 ;;;###autoload (autoload 'flymake-collection-gcc "flymake-collection-gcc")
