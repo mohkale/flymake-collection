@@ -60,6 +60,8 @@
     (lua-mode
      flymake-collection-luacheck
      (flymake-collection-lua :disabled t))
+    (nix-mode
+     flymake-collection-statix)
     (sql-mode
      flymake-collection-sql-lint
      (flymake-collection-sqlint :disabled t))

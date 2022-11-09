@@ -1,0 +1,44 @@
+---
+checker: flymake-collection-statix
+tests:
+  - name: no-lints
+    file: |
+      # test case with no lints
+      {
+        hello = "world";
+        someFn = n: 2 + n;
+      }
+    lints: []
+  - name: notes
+    file: |
+      # test case with some warnings
+      {
+        hello = hello;
+        world = world;
+      }
+    lints:
+      - point: [3, 2]
+        level: warning
+        message: This assignment is better written with `inherit` (statix)
+      - point: [4, 2]
+        level: warning
+        message: This assignment is better written with `inherit` (statix)
+  - name: syntax-error
+    file: |
+      { definitely should not work
+    lints:
+      - point: [1, 0]
+        level: error
+        message: Unexpected end of file (statix)
+      - point: [1, 0]
+        level: error
+        message: Unexpected end of file, wanted any of [TOKEN_SEMICOLON] (statix)
+      - point: [1, 0]
+        level: error
+        message: Unexpected end of file (statix)
+      - point: [1, 0]
+        level: error
+        message: Unexpected end of file, wanted any of [TOKEN_ASSIGN] (statix)
+      - point: [1, 13]
+        level: error
+        message: Unexpected TOKEN_IDENT at 13..28, wanted any of [TOKEN_ASSIGN] (statix)
