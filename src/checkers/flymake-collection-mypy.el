@@ -32,6 +32,11 @@
 (eval-when-compile
   (require 'flymake-collection-define))
 
+(defcustom flymake-collection-mypy-args nil
+  "Additional command line arguments."
+  :type '(repeat :tag "Arguments" (string :tag "Argument"))
+  :group 'flymake-collection)
+
 ;;;###autoload (autoload 'flymake-collection-mypy "flymake-collection-mypy")
 (flymake-collection-define-rx flymake-collection-mypy
   "Mypy syntax and type checker.  Requires mypy>=0.580.
@@ -43,13 +48,14 @@ See URL `http://mypy-lang.org/'."
                (error "Cannot find mypy executable"))
   :write-type 'file
   :source-inplace t
-  :command (list mypy-exec
-                 "--show-column-numbers"
-                 "--no-error-summary"
-                 "--no-color-output"
-                 "--show-absolute-path"
-                 "--show-error-codes"
-                 flymake-collection-temp-file)
+  :command `(,mypy-exec
+             ,@flymake-collection-mypy-args
+             "--show-column-numbers"
+             "--no-error-summary"
+             "--no-color-output"
+             "--show-absolute-path"
+             "--show-error-codes"
+             ,flymake-collection-temp-file)
   :regexps
   ((error   bol (file-name) ":" line ":" column ": error: "   (message) eol)
    (warning bol (file-name) ":" line ":" column ": warning: " (message) eol)
