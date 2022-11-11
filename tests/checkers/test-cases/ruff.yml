@@ -1,0 +1,28 @@
+---
+checker: flymake-collection-ruff
+tests:
+  - name: no-lints
+    file: |
+      """A test case with no output from ruff."""
+
+      print("hello world")
+    lints: []
+  - name: notes
+    file: |
+      """A test case with a warning lint."""
+
+      a == None
+    lints:
+      - point: [3, 0]
+        level: warning
+        message: SCF821 Undefined name `a` (ruff)
+      - point: [3, 5]
+        level: warning
+        message: SCE711 Comparison to `None` should be `cond is None` (ruff)
+  - name: syntax-error
+    file: |
+      definitely should not work
+    lints:
+      - point: [1, 12]
+        level: warning
+        message: "SCE999 SyntaxError: invalid syntax. Got unexpected token 'should' (ruff)"
