@@ -113,11 +113,11 @@ See URL `http://mypy-lang.org/'."
                  (list flymake-collection-temp-file)))
   :regexps
   ((error   bol (file-name) ":" line ":" column ": error: "
-            (message) (opt "  [" (id (one-or-more alpha)) "]") eol)
+            (message) (opt "  [" (id (* graph)) "]") eol)
    (warning bol (file-name) ":" line ":" column ": warning: "
-            (message) (opt "  [" (id (one-or-more alpha)) "]") eol)
+            (message) (opt "  [" (id (* graph)) "]") eol)
    (note    bol (file-name) ":" line ":" column ": note: "
-            (message) (opt "  [" (id (one-or-more alpha)) "]") eol)))
+            (message) (opt "  [" (id (* graph)) "]") eol)))
 
 (provide 'flymake-collection-mypy)
 

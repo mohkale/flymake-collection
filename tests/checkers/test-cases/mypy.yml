@@ -16,6 +16,16 @@ tests:
       - point: [3, 6]
         level: error
         message: operator Unsupported operand types for + ("str" and "int") (mypy)
+  - name: error-attr-defined
+    file: |
+      """Test parsing an error with a hyphen in the id."""
+
+      x = 1
+      x.foo
+    lints:
+      - point: [4, 0]
+        level: error
+        message: attr-defined "int" has no attribute "foo" (mypy)
   - name: note-reveal
     file: |
       """Test parsing a note."""
