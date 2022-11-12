@@ -34,11 +34,7 @@
   (require 'flymake-collection-define))
 
 (defcustom flymake-collection-mypy-args
-  '("--show-column-numbers"
-    "--no-error-summary"
-    "--no-color-output"
-    "--show-absolute-path"
-    "--show-error-codes")
+  '("--show-error-codes")
   "Command line arguments always passed to `flymake-collection-mypy'."
   :type '(repeat (string :tag "Arg"))
   :group 'flymake-collection)
@@ -103,6 +99,10 @@ See URL `http://mypy-lang.org/'."
   :write-type 'file
   :source-inplace t
   :command `(,mypy-exec
+             "--show-column-numbers"
+             "--show-absolute-path"
+             "--no-error-summary"
+             "--no-color-output"
              ,@flymake-collection-mypy-args
              ,@(if-let ((source-file (buffer-file-name
                                       flymake-collection-source))
