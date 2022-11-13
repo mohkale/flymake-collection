@@ -70,7 +70,7 @@ See URL `https://github.com/charliermarsh/ruff'."
             (car loc)
             (cdr loc)
             :warning
-            (concat (propertize (format "SC%s" .code) 'face 'flymake-collection-diag-id) " " .message)))))
+            (concat (propertize .code 'face 'flymake-collection-diag-id) " " .message)))))
 
 (provide 'flymake-collection-ruff)
 
