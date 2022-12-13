@@ -60,11 +60,13 @@ killed and replaced with the new check.")
 
 (define-obsolete-function-alias 'flymake-rest-define 'flymake-collection-define "2.0.0")
 
-(defun flymake-collection-define--temp-file (temp-dir temp-file source-inplace)
+(defun flymake-collection-define--temp-file
+    (temp-dir temp-file source-inplace temp-file-prefix)
   "Let forms for defining a temporary directory and file.
 TEMP-DIR and TEMP-FILE are the symbols used for the corresponding variables.
 SOURCE-INPLACE specifies whether the TEMP-DIR should be in the same working
-directory as the current buffer."
+directory as the current buffer. Temporary files are named by concatenating
+TEMP-FILE-PREFIX with the current buffer file name."
   `((,temp-dir
      ,@(let ((forms
               (append
@@ -84,7 +86,7 @@ doesn't exist: %s" dir))
      (let ((temporary-file-directory ,temp-dir)
            (basename (file-name-nondirectory (or (buffer-file-name)
                                                  (buffer-name)))))
-       (make-temp-file "flymake_" nil (concat "_" basename))))))
+       (make-temp-file ,temp-file-prefix nil (concat "_" basename))))))
 
 (defmacro flymake-collection-define--parse-diags
     (title proc-symb diags-symb current-diag-symb source-symb error-parser)
@@ -132,7 +134,7 @@ CURRENT-DIAGS-SYMB, SOURCE-SYMB, ERROR-PARSER are all described in
 (cl-defmacro flymake-collection-define
     (name docstring
           &optional &key title command error-parser write-type
-          source-inplace pre-let pre-check)
+          source-inplace pre-let pre-check (temp-file-prefix ".flymake_"))
   "Quickly define a backend function for use with Flymake.
 Define a function NAME which is suitable for use with the variable
 `flymake-diagnostic-functions'. DOCSTRING if given will become the
@@ -192,7 +194,11 @@ used to start the checker process. It should be suitable for use as the
 ERROR-PARSER is a lisp-form that should, each time it is evaluated,
 return the next diagnostic from the checker output. The result should be
 a value that can be passed to the `flymake-make-diagnostic' function. Once
-there are no more diagnostics to parse this form should evaluate to nil."
+there are no more diagnostics to parse this form should evaluate to nil.
+
+TEMP-FILE-PREFIX overrides the prefix of temporary file names created by
+the checker. This is useful for checker programs that have issues running
+on hidden files."
   (declare (indent defun) (doc-string 2))
   (unless lexical-binding
     (error "Need lexical-binding for flymake-collection-define (%s)" name))
@@ -228,7 +234,7 @@ there are no more diagnostics to parse this form should evaluate to nil."
        (let* ((,source-symb (current-buffer))
               ,@(when (eq write-type 'file)
                   (flymake-collection-define--temp-file
-                   temp-dir-symb temp-file-symb source-inplace))
+                   temp-dir-symb temp-file-symb source-inplace temp-file-prefix))
               ,@pre-let)
          ;; With vars defined, do pre-check.
          ,@(when pre-check
@@ -441,13 +447,14 @@ For an example of this macro in action, see `flymake-collection-pycodestyle'."
 
 (cl-defmacro flymake-collection-define-rx
     (name docstring
-          &optional &key title command write-type source-inplace pre-let pre-check regexps)
+          &optional &key title command write-type
+          source-inplace pre-let pre-check temp-file-prefix regexps)
   "`flymake-collection-define' helper using `rx' syntax to parse diagnostics.
 This helper macro adapts `flymake-collection-define' to use an error-parser
 built from a collections of REGEXPS (see `flymake-collection-define--parse-rx').
 
 See `flymake-collection-define' for a description of NAME, DOCSTRING, TITLE,
-COMMAND,WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
+COMMAND,WRITE-TYPE, SOURCE-INPLACE, PRE-LET, PRE-CHECK, and TEMP-FILE-PREFIX."
   (declare (indent defun) (doc-string 2))
   `(flymake-collection-define ,name
      ,docstring
@@ -457,6 +464,7 @@ COMMAND,WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
      :source-inplace ,source-inplace
      :pre-let ,pre-let
      :pre-check ,pre-check
+     :temp-file-prefix ,temp-file-prefix
      :error-parser
      (flymake-collection-define--parse-rx ,regexps)))
 

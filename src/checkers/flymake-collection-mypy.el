@@ -111,6 +111,7 @@ See URL `http://mypy-lang.org/'."
                     "--shadow-file" source-file flymake-collection-temp-file
                     source-file)
                  (list flymake-collection-temp-file)))
+  :temp-file-prefix "flymake_mypy_"
   :regexps
   ((error   bol (file-name) ":" line ":" column ": error: "
             (message) (opt "  [" (id (* graph)) "]") eol)
