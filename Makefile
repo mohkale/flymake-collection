@@ -1,5 +1,5 @@
-SRC   := src/*.el src/checkers/*.el
-EMACS ?= emacs --eval '(add-to-list (quote load-path) (concat default-directory "src/"))'
+SRC   := lisp/*.el
+EMACS ?= emacs --eval '(add-to-list (quote load-path) (concat default-directory "lisp/"))'
 
 .PHONY: lint
 lint: compile checkdoc

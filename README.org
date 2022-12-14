@@ -59,9 +59,9 @@ have a flymake backend available.
                   (flymake-mode +1)))
     #+end_src
 
-    For a list of supported syntax-checkers see [[file:src/checkers/][./src/checkers/]]. All of the defined
-    checkers are auto-loaded and have no other dependencies than ~flymake-collection~
-    so once you've installed and compiled ~flymake-collection~ you can hook them into
+    For a list of supported syntax-checkers see [[file:lisp/][./lisp/]]. All of the defined checkers are
+    auto-loaded and have no other dependencies than ~flymake-collection~ so once you've
+    installed and compiled ~flymake-collection~ you can hook them into
     ~flymake-diagnostic-functions~ without any extra configuration or loading being
     needed.
 
