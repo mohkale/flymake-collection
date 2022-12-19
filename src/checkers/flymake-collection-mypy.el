@@ -111,6 +111,8 @@ See URL `http://mypy-lang.org/'."
                     "--shadow-file" source-file flymake-collection-temp-file
                     source-file)
                  (list flymake-collection-temp-file)))
+  ;; Temporary file cannot start with a dot for mypy, see
+  ;; https://github.com/mohkale/flymake-collection/pull/9
   :temp-file-prefix "flymake_mypy_"
   :regexps
   ((error   bol (file-name) ":" line ":" column ": error: "
