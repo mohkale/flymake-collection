@@ -1,0 +1,47 @@
+---
+checker: flymake-collection-mypy
+tests:
+  - name: no-lints
+    file: |
+      """A test case with no output from mypy."""
+
+      print("hello world")
+    lints: []
+  - name: error-operator
+    file: |
+      """Test parsing an error."""
+
+      "x" + 1
+    lints:
+      - point: [3, 6]
+        level: error
+        message: operator Unsupported operand types for + ("str" and "int") (mypy)
+  - name: error-attr-defined
+    file: |
+      """Test parsing an error with a hyphen in the id."""
+
+      x = 1
+      x.foo
+    lints:
+      - point: [4, 0]
+        level: error
+        message: attr-defined "int" has no attribute "foo" (mypy)
+  - name: note-reveal
+    file: |
+      """Test parsing a note."""
+
+      foo = "bar"
+      reveal_type(foo)
+    lints:
+      - point: [4, 12]
+        level: note
+        message: Revealed type is "builtins.str" (mypy)
+  - name: error-syntax
+    file: |
+      """Test syntax error."""
+
+      class Foo:
+    lints:
+      - point: [3, 0]
+        level: error
+        message: syntax unexpected EOF while parsing (mypy)
