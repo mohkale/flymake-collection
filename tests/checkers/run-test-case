@@ -74,8 +74,7 @@ def run_flymake(src: pathlib.Path, checker: str) -> Optional[List[TestLint]]:
 (require 'flymake)
 (require 'json)
 
-(add-to-list 'load-path "/src/src")
-(add-to-list 'load-path "/src/src/checkers")
+(add-to-list 'load-path "/src/lisp")
 (require (intern "{checker}") "{checker}.el")
 
 (setq src (find-file-literally "{src}")
