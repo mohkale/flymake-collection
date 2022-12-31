@@ -476,7 +476,7 @@ COMMAND,WRITE-TYPE, SOURCE-INPLACE, PRE-LET, PRE-CHECK, and TEMP-FILE-PREFIX."
 (cl-defmacro flymake-collection-define-enumerate
   (name docstring
         &optional &key title command write-type source-inplace
-        pre-let pre-check generator enumerate-parser)
+        pre-let pre-check temp-file-prefix generator enumerate-parser)
   "`flymake-collection-define' helper for dealing with serialised diagnostics.
 This helper parses a collection of diagnostics using GENERATOR and then
 enumerates through it, entry by entry using ENUMERATE-PARSER. This is useful
@@ -488,7 +488,7 @@ the variable `it'. ENUMERATE-PARSER should evaluate to a form that can be passed
 to `flymake-make-diagnostic'.
 
 See `flymake-collection-define' for a description of NAME, DOCSTRING, TITLE,
-COMMAND, WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
+COMMAND, WRITE-TYPE, SOURCE-INPLACE, PRE-LET, PRE-CHECK, and TEMP-FILE-PREFIX."
   (declare (indent defun) (doc-string 2))
   (let ((entries-var 'flymake-collection-entries)
         (parsed-var 'flymake-collection-parsed))
@@ -502,6 +502,7 @@ COMMAND, WRITE-TYPE, SOURCE-INPLACE, PRE-LET, and PRE-CHECK."
                            (,parsed-var))
                          pre-let)
        :pre-check ,pre-check
+       :temp-file-prefix ,temp-file-prefix
        :error-parser
        (progn
          (unless ,parsed-var
