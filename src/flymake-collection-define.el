@@ -309,8 +309,11 @@ exit status %d\nStderr: %s"
              ;; If piping, send data to the process.
              ,@(when (eq write-type 'pipe)
                  `((when (process-live-p ,proc-symb)
-                     (process-send-region ,proc-symb (point-min) (point-max))
-                     (process-send-eof ,proc-symb))))
+                     (condition-case-unless-debug error
+                         (progn
+                           (process-send-region ,proc-symb (point-min) (point-max))
+                           (process-send-eof ,proc-symb))
+                       (error (flymake-log :error "Could not send stdin to checker %s" error))))))
              ;; Return value of syntax-checker is checker function.
              ,proc-symb))))))
 
