@@ -32,6 +32,7 @@
 (define-obsolete-variable-alias 'flymake-rest-config 'flymake-collection-config "2.0.0")
 (define-obsolete-variable-alias 'flymake-rest-config-inherit 'flymake-collection-config-inherit "2.0.0")
 (define-obsolete-variable-alias 'flymake-rest-hook-ignore-modes 'flymake-collection-hook-ignore-modes "2.0.0")
+(define-obsolete-function-alias 'flymake-collection-configured-checkers 'flymake-collection-hook-checkers "2.0.1")
 
 ;;;###autoload
 (defcustom flymake-collection-config
@@ -85,10 +86,12 @@
             (symbol :tag "Backend")
             (cons :tag "Backend with properties"
                   (symbol :tag "Backend")
-                  (plist :tag "Properties"
-                         :options ((:disabled boolean)
-                                   (:depth integer)
-                                   (:predicate function)))))))
+                  (choice
+                   (number :tag "Depth")
+                   (plist :tag "Properties"
+                          :options ((:disabled boolean)
+                                    (:depth integer)
+                                    (:predicate function))))))))
   :group 'flymake-collection)
 
 (defcustom flymake-collection-config-inherit nil
@@ -96,8 +99,37 @@
   :type 'boolean
   :group 'flymake-collection)
 
-(defun flymake-collection-configured-checkers (mode)
-  "Fetch the list of diagnostic functions configured for MODE."
+(defun flymake-collection-hook--configured-checkers-for-mode (mode)
+  "Return all checkers configured for MODE in `flymake-collection-config'."
+  (alist-get mode flymake-collection-config))
+
+(defun flymake-collection-hook--resolve-configured-checkers (checkers)
+  "Resolve all the checkers in CHECKERS.
+Resolving converts each checker in CHECKERS, which should be the value-type in
+`flymake-collection-config', into a list of (checker . depth) values. This
+function will also remove any disabled checkers or checkers with predicates
+that are not true."
+  (cl-loop
+   for conf in checkers
+   with predicated-result = nil
+
+   if (symbolp conf)
+     collect (cons conf nil)
+   else if (consp conf)
+     if (numberp (cdr conf))
+       collect conf
+     else
+       do (cl-destructuring-bind (checker &optional &key depth predicate disabled &allow-other-keys)
+              conf
+            (when (and (not disabled)
+                       (or (not predicate)
+                           (funcall predicate)))
+              (setq predicated-result (cons checker depth))))
+       and if predicated-result
+         collect predicated-result))
+
+(defun flymake-collection-hook-checkers (mode)
+  "Fetch the list of diagnostic functions for MODE as (checker . depth)."
   (let (checkers
         (modes (list mode)))
     ;; Consider all the parent modes as well.
@@ -106,21 +138,14 @@
         (push mode modes)))
     ;; For each mode populate the checkers alist with (checker . depth).
     (dolist (mode modes)
-      (dolist (conf (alist-get mode flymake-collection-config))
-        (cond ((symbolp conf)
-               (push (cons conf nil) checkers))
-              ((consp conf)
-               (cl-destructuring-bind (checker &optional &key depth predicate disabled &allow-other-keys)
-                   (if (numberp conf)
-                       `(,(car conf) :depth ,(cdr conf))
-                     conf)
-                 (when (and (not disabled)
-                            (or (not predicate)
-                                (funcall predicate)))
-                   (push (cons checker depth) checkers))))
-              (t
-               (warn "Unknown checker config in `flymake-collection-config': %s" conf)))))
-    (nreverse checkers)))
+      (setq checkers (append
+                      checkers
+                      (flymake-collection-hook--resolve-configured-checkers
+                       (flymake-collection-hook--configured-checkers-for-mode
+                        mode)))))
+    checkers))
+
+
 
 (defcustom flymake-collection-hook-ignore-modes nil
   "List of modes in which `flymake-collection-hook' is inhibited."
@@ -134,11 +159,12 @@
                             (and (boundp mode)
                                  (eval mode))))
                       flymake-collection-hook-ignore-modes)
-    (dolist (it (flymake-collection-configured-checkers major-mode))
+    (dolist (it (flymake-collection-hook-checkers major-mode))
       (add-hook 'flymake-diagnostic-functions (car it) (cdr it) t))))
 
 ;;;###autoload
 (define-obsolete-function-alias 'flymake-rest-hook-setup 'flymake-collection-hook-setup "2.0.0")
+;;;###autoload
 (define-obsolete-function-alias 'flymake-rest-hook-teardown 'flymake-collection-hook-teardown "2.0.0")
 
 ;;;###autoload
