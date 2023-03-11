@@ -33,9 +33,12 @@
 (define-obsolete-variable-alias 'flymake-rest-config-inherit 'flymake-collection-config-inherit "2.0.0")
 (define-obsolete-variable-alias 'flymake-rest-hook-ignore-modes 'flymake-collection-hook-ignore-modes "2.0.0")
 (define-obsolete-function-alias 'flymake-collection-configured-checkers 'flymake-collection-hook-checkers "2.0.1")
+;;;###autoload
+(define-obsolete-variable-alias 'flymake-collection-config 'flymake-collection-hook-config "2.0.2")
+(define-obsolete-variable-alias 'flymake-collection-config-inherit 'flymake-collection-hook-inherit-config "2.0.2")
 
 ;;;###autoload
-(defcustom flymake-collection-config
+(defcustom flymake-collection-hook-config
   '(((python-mode python-ts-mode) .
      (flymake-collection-pycodestyle
       (flymake-mypy :disabled t)
@@ -100,14 +103,14 @@
                                     (:predicate function))))))))
   :group 'flymake-collection)
 
-(defcustom flymake-collection-config-inherit nil
+(defcustom flymake-collection-hook-inherit-config nil
   "When true diagnostic hooks inherit parent-mode hooks."
   :type 'boolean
   :group 'flymake-collection)
 
 (defun flymake-collection-hook--configured-checkers-for-mode (mode)
-  "Return all checkers configured for MODE in `flymake-collection-config'."
-  (cl-dolist (it flymake-collection-config)
+  "Return all checkers configured for MODE in `flymake-collection-hook-config'."
+  (cl-dolist (it flymake-collection-hook-config)
     (let ((it-mode (car it))
           (it-conf (cdr it)))
       (cond ((symbolp it-mode)
@@ -117,13 +120,14 @@
              (when (member mode it-mode)
                (cl-return it-conf)))
             (t
-             (user-error "Unknown hook predicate=%s in `flymake-collection-config'"
-                         it))))))
+             (user-error
+              "Unknown hook predicate=%s in `flymake-collection-hook-config'"
+              it))))))
 
 (defun flymake-collection-hook--resolve-configured-checkers (checkers)
   "Resolve all the checkers in CHECKERS.
 Resolving converts each checker in CHECKERS, which should be the value-type in
-`flymake-collection-config', into a list of (checker . depth) values. This
+`flymake-collection-hook-config', into a list of (checker . depth) values. This
 function will also remove any disabled checkers or checkers with predicates
 that are not true."
   (cl-loop
@@ -150,7 +154,7 @@ that are not true."
   (let (checkers
         (modes (list mode)))
     ;; Consider all the parent modes as well.
-    (when flymake-collection-config-inherit
+    (when flymake-collection-hook-inherit-config
       (while (setq mode (get mode 'derived-mode-parent))
         (push mode modes)))
     ;; For each mode populate the checkers alist with (checker . depth).
@@ -198,7 +202,7 @@ that are not true."
 
 ;;;###autoload
 (with-eval-after-load 'use-package-core
-  (defvar flymake-collection-config)
+  (defvar flymake-collection-hook-config)
 
   (declare-function use-package-concat "use-package-core")
   (declare-function use-package-process-keywords "use-package-core")
@@ -218,7 +222,7 @@ that are not true."
     (let ((body (use-package-process-keywords name-symbol rest state)))
       (use-package-concat
        (cl-loop for it in hooks
-                collect `(push (quote ,it) flymake-collection-config))
+                collect `(push (quote ,it) flymake-collection-hook-config))
        body))))
 
 (provide 'flymake-collection-hook)

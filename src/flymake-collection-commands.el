@@ -38,8 +38,8 @@ they aren't associated with the current mode."
     (cl-remove-duplicates
      (cl-loop for (mode . checkers) in
               (if all-modes
-                  flymake-collection-config
-                (list (assoc major-mode flymake-collection-config)))
+                  flymake-collection-hook-config
+                (list (assoc major-mode flymake-collection-hook-config)))
               append
               (cl-loop for it in checkers
                        with checker = nil
