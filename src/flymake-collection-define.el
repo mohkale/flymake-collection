@@ -308,8 +308,9 @@ exit status %d\nStderr: %s"
                    (plist-put flymake-collection-define--procs ',name ,proc-symb))
              ;; If piping, send data to the process.
              ,@(when (eq write-type 'pipe)
-                 `((process-send-region ,proc-symb (point-min) (point-max))
-                   (process-send-eof ,proc-symb)))
+                 `((when (process-live-p ,proc-symb)
+                     (process-send-region ,proc-symb (point-min) (point-max))
+                     (process-send-eof ,proc-symb))))
              ;; Return value of syntax-checker is checker function.
              ,proc-symb))))))
 
