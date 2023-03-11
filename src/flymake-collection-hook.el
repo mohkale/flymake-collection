@@ -78,7 +78,10 @@
     (nxml-mode flymake-collection-xmllint))
   "Configuration mapping major-modes to `flymake' backends."
   :type '(alist
-          :key-type (symbol :tag "Mode")
+          :key-type
+          (choice
+           (symbol :tag "Mode")
+           (repeat (symbol :tag "Mode")))
           :value-type
           (repeat
            :tag "Backends"
@@ -101,7 +104,18 @@
 
 (defun flymake-collection-hook--configured-checkers-for-mode (mode)
   "Return all checkers configured for MODE in `flymake-collection-config'."
-  (alist-get mode flymake-collection-config))
+  (cl-dolist (it flymake-collection-config)
+    (let ((it-mode (car it))
+          (it-conf (cdr it)))
+      (cond ((symbolp it-mode)
+             (when (equal it-mode mode)
+               (cl-return it-conf)))
+            ((consp it)
+             (when (member mode it-mode)
+               (cl-return it-conf)))
+            (t
+             (user-error "Unknown hook predicate=%s in `flymake-collection-config'"
+                         it))))))
 
 (defun flymake-collection-hook--resolve-configured-checkers (checkers)
   "Resolve all the checkers in CHECKERS.
