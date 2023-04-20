@@ -37,7 +37,7 @@
   "A SQL syntax checker using the sqlint tool.
 
 See URL `https://github.com/purcell/sqlint'."
-  :title "sql-lint"
+  :title "sqlint"
   :pre-let ((lint-exec (executable-find "sqlint")))
   :pre-check (unless lint-exec
                (error "Cannot find sqlint executable"))
