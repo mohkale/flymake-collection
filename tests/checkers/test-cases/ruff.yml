@@ -23,6 +23,6 @@ tests:
     file: |
       definitely should not work
     lints:
-      - point: [1, 12]
+      - point: [1, 11]
         level: warning
         message: "E999 SyntaxError: invalid syntax. Got unexpected token 'should' (ruff)"
