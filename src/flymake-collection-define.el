@@ -400,54 +400,53 @@ For an example of this macro in action, see `flymake-collection-pycodestyle'."
     ;; until there actually aren't any more to match.
     `(let (res ; file-name
            line column message id end-line end-column severity-ix)
-       (save-match-data
-         (save-excursion
-           (while (and (not res)
-                       (search-forward-regexp ,combined-regex nil t))
-             (setq
-              res
-              (progn
-                (setq ; file-name (match-string 1)
-                 line (match-string 2)
-                 column (match-string 3)
-                 message (match-string 4)
-                 id (match-string 5)
-                 end-line (match-string 6)
-                 end-column (match-string 7)
-                 severity-ix (- (seq-find #'match-string
-                                          (number-sequence ,(1+ group-count)
-                                                           ,(+ group-count (length regexps))))
-                                ,(1+ group-count)))
-                (cond
-                 ;; Log an error when any of the required fields are missing.
-                 ,@(cl-loop for it in '(severity-ix line message)
-                            collect
-                            `((not ,it)
-                              (flymake-log :error
-                                           ,(format
-                                             "Matched diagnostic didn't capture a %s group"
-                                             (symbol-name it)))
-                              nil))
-                 (t
-                  (let ((loc (flymake-diag-region flymake-collection-source
-                                                  (string-to-number line)
-                                                  (when column
-                                                    (string-to-number column))))
-                        (loc-end (when end-line
-                                   (flymake-diag-region flymake-collection-source
-                                                        (string-to-number end-line)
-                                                        (when end-column
-                                                          (string-to-number end-column))))))
-                    (when loc-end
-                      (setcdr loc (cdr loc-end)))
-                    (list flymake-collection-source
-                          (car loc)
-                          (cdr loc)
-                          (nth severity-ix (quote ,severity-seq))
-                          (concat
-                           (when id
-                             (concat (propertize id 'face 'flymake-collection-diag-id) " "))
-                           message))))))))))
+       (while (and (not res)
+                   (search-forward-regexp ,combined-regex nil t))
+         (setq
+          res
+          (save-match-data
+            (save-excursion
+              (setq ; file-name (match-string 1)
+                    line (match-string 2)
+                    column (match-string 3)
+                    message (match-string 4)
+                    id (match-string 5)
+                    end-line (match-string 6)
+                    end-column (match-string 7)
+                    severity-ix (- (seq-find #'match-string
+                                             (number-sequence ,(1+ group-count)
+                                                              ,(+ group-count (length regexps))))
+                                   ,(1+ group-count)))
+              (cond
+               ;; Log an error when any of the required fields are missing.
+               ,@(cl-loop for it in '(severity-ix line message)
+                          collect
+                          `((not ,it)
+                            (flymake-log :error
+                                         ,(format
+                                           "Matched diagnostic didn't capture a %s group"
+                                           (symbol-name it)))
+                            nil))
+               (t
+                (let ((loc (flymake-diag-region flymake-collection-source
+                                                (string-to-number line)
+                                                (when column
+                                                  (string-to-number column))))
+                      (loc-end (when end-line
+                                 (flymake-diag-region flymake-collection-source
+                                                      (string-to-number end-line)
+                                                      (when end-column
+                                                        (string-to-number end-column))))))
+                  (when loc-end
+                    (setcdr loc (cdr loc-end)))
+                  (list flymake-collection-source
+                        (car loc)
+                        (cdr loc)
+                        (nth severity-ix (quote ,severity-seq))
+                        (concat
+                         (when id
+                           (concat (propertize id 'face 'flymake-collection-diag-id) " "))
+                         message)))))))))
        res)))
 
 (cl-defmacro flymake-collection-define-rx
