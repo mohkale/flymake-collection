@@ -25,4 +25,4 @@ tests:
     lints:
       - point: [1, 11]
         level: warning
-        message: "E999 SyntaxError: unexpected token 'should' (ruff)"
+        message: "E999 SyntaxError: Unexpected token 'should' (ruff)"
