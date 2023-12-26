@@ -48,7 +48,8 @@ See URL `https://github.com/charliermarsh/ruff'."
                (error "Cannot find ruff executable"))
   :write-type 'pipe
   :command `(,ruff-exec
-             "--format" "json"
+             "check"
+             "--output-format" "json"
              ,@flymake-collection-ruff-args
              ,@(when-let ((file (buffer-file-name flymake-collection-source)))
                  (list "--stdin-filename" file))
