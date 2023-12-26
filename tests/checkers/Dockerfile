@@ -18,16 +18,16 @@ RUN apt-get update && \
       libjansson4 \
       libjansson-dev \
       git && \
-    git clone -b "${EMACS_BRANCH:-emacs-28}" --single-branch git://git.savannah.gnu.org/emacs.git . && \
+    git clone -b "${EMACS_BRANCH:-emacs-28}" --single-branch --depth 1 git://git.savannah.gnu.org/emacs.git . && \
     sed -i 's/# deb-src/deb-src/' /etc/apt/sources.list && \
     apt-get update && \
     apt-get build-dep -y emacs && \
     ./autogen.sh && \
     ./configure && \
-    make -j4 && \
+    make -j$(nproc) && \
     make install && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* $(pwd)/*
 
 WORKDIR /build
 COPY installers /build/installers
