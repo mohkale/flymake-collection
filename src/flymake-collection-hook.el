@@ -41,6 +41,7 @@
 (defcustom flymake-collection-hook-config
   '(((python-mode python-ts-mode) .
      (flymake-collection-pycodestyle
+      (python-flymake :disabled t)
       (flymake-mypy :disabled t)
       (flymake-collection-pylint :disabled t)
       (flymake-collection-flake8 :disabled t)
@@ -74,7 +75,8 @@
      (flymake-collection-rubocop))
     ;; (hledger-mode flymake-collection-hledger)
     ((sh-mode bash-ts-mode) .
-     (flymake-collection-shellcheck))
+     (flymake-collection-shellcheck
+      (sh-shellcheck-flymake :disabled t)))
     ((yaml-mode yaml-ts-mode) .
      flymake-collection-yamllint)
     ((web-mode html-ts-mode) .
@@ -124,7 +126,7 @@
               "Unknown hook predicate=%s in `flymake-collection-hook-config'"
               it))))))
 
-(defun flymake-collection-hook--resolve-configured-checkers (checkers)
+(defun flymake-collection-hook--expand-configs (checkers)
   "Resolve all the checkers in CHECKERS.
 Resolving converts each checker in CHECKERS, which should be the value-type in
 `flymake-collection-hook-config', into a list of (checker . depth) values. This
@@ -135,22 +137,42 @@ that are not true."
    with predicated-result = nil
 
    if (symbolp conf)
-     collect (cons conf nil)
+     collect `(:checker ,conf)
    else if (consp conf)
      if (numberp (cdr conf))
-       collect conf
+       collect `(:checker ,(car conf) :depth ,(cdr conf))
      else
        do (cl-destructuring-bind (checker &optional &key depth predicate disabled &allow-other-keys)
               conf
-            (when (and (not disabled)
-                       (or (not predicate)
-                           (funcall predicate)))
-              (setq predicated-result (cons checker depth))))
+            (setq predicated-result `(:checker ,checker
+                                      :depth ,depth
+                                      :disabled ,(or disabled
+                                                     (and predicate
+                                                          (funcall predicate))))))
        and if predicated-result
          collect predicated-result))
 
-(defun flymake-collection-hook-checkers (mode)
-  "Fetch the list of diagnostic functions for MODE as (checker . depth)."
+(defun flymake-collection-hook--checkers ()
+  "Fetch config entries passing the predicate for the current buffer."
+  (let (checkers
+        (modes (list major-mode)))
+    (when flymake-collection-hook-inherit-config
+      (let ((mode major-mode))
+        (while (setq mode (get mode 'derived-mode-parent))
+          (push mode modes))))
+
+    (dolist (it flymake-collection-hook-config)
+      (when
+          (pcase (car it)
+            ((pred symbolp) (member (car it) modes))
+            ((pred consp) (seq-intersection modes (car it)))
+            (_
+             (user-error "Unknown hook predicate=%s in `flymake-collection-hook-config'" it)))
+        (setq checkers (append checkers (cdr it)))))))
+
+(defun flymake-collection-hook--checker-configs (mode)
+  "Fetch the list of diagnostic functions for MODE as plists.
+The plists contains keys for :checker, :depth, :disabled."
   (let (checkers
         (modes (list mode)))
     ;; Consider all the parent modes as well.
@@ -161,7 +183,7 @@ that are not true."
     (dolist (mode modes)
       (setq checkers (append
                       checkers
-                      (flymake-collection-hook--resolve-configured-checkers
+                      (flymake-collection-hook--expand-configs
                        (flymake-collection-hook--configured-checkers-for-mode
                         mode)))))
     checkers))
@@ -180,8 +202,11 @@ that are not true."
                             (and (boundp mode)
                                  (eval mode))))
                       flymake-collection-hook-ignore-modes)
-    (dolist (it (flymake-collection-hook-checkers major-mode))
-      (add-hook 'flymake-diagnostic-functions (car it) (cdr it) t))))
+    (dolist (it (flymake-collection-hook--checker-configs major-mode))
+      (cl-destructuring-bind (&key checker depth disabled) it
+        (if disabled
+            (remove-hook 'flymake-diagnostic-functions checker 'local)
+          (add-hook 'flymake-diagnostic-functions checker depth 'local))))))
 
 ;;;###autoload
 (define-obsolete-function-alias 'flymake-rest-hook-setup 'flymake-collection-hook-setup "2.0.0")
