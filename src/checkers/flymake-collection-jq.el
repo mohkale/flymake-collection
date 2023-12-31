@@ -47,7 +47,7 @@ See URL `https://stedolan.github.io/jq/'."
   :write-type 'pipe
   :command (list jq-exec "." "-" null-device)
   :regexps
-  ((error bol "parse error: " (message) " at line " line ", column " column eol)))
+  ((error bol (? "jq: ") "parse error: " (message) " at line " line ", column " column eol)))
 
 (provide 'flymake-collection-jq)
 

@@ -1,0 +1,20 @@
+---
+checker: flymake-collection-jq
+tests:
+  - name: no-lints
+    file: |-
+      {
+        "foo": "bar"
+      }
+    lints: []
+  - name: syntax-error
+    file: |
+      {
+        "a": 1,
+        "b": "...",
+        ""
+      }
+    lints:
+      - point: [5, 0]
+        level: error
+        message: Objects must consist of key:value pairs (jq)
