@@ -39,7 +39,10 @@
 
 ;;;###autoload
 (defcustom flymake-collection-hook-config
-  '(((python-mode python-ts-mode) .
+  '((elisp-mode .
+     (elisp-flymake-byte-compile
+      elisp-flymake-checkdoc))
+    ((python-mode python-ts-mode) .
      (flymake-collection-pycodestyle
       (python-flymake :disabled t)
       (flymake-mypy :disabled t)
