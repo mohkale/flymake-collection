@@ -65,7 +65,8 @@
     (less-mode flymake-collection-less)
     (markdown-mode
      flymake-collection-markdownlint
-     flymake-collection-proselint)
+     flymake-collection-proselint
+     (flymake-collection-vale :disabled t))
     (lua-mode
      flymake-collection-luacheck
      (flymake-collection-lua :disabled t))
@@ -84,7 +85,9 @@
      flymake-collection-yamllint)
     ((web-mode html-ts-mode) .
      (flymake-collection-html-tidy))
-    (org-mode flymake-collection-proselint)
+    (org-mode
+     flymake-collection-proselint
+     (flymake-collection-vale :disabled t))
     (notmuch-message-mode flymake-collection-proselint)
     (nxml-mode flymake-collection-xmllint))
   "Configuration mapping major-modes to `flymake' backends."

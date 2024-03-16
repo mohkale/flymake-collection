@@ -1,0 +1,13 @@
+---
+checker: flymake-collection-vale
+tests:
+  - name: no-lints
+    file: ""
+    lints: []
+  - name: Mispelling
+    file: |
+      # Foo Bar Baz
+    lints:
+      - point: [1, 10]
+        level: error
+        message: "[Vale.Spelling] Did you really mean 'Baz'? (vale)"
