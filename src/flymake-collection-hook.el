@@ -93,6 +93,7 @@
     ;; (hledger-mode flymake-collection-hledger)
     ((sh-mode bash-ts-mode) .
      (flymake-collection-shellcheck
+      (flymake-collection-bashate :disabled t)
       (flymake-collection-codespell :disabled t)
       (sh-shellcheck-flymake :disabled t)))
     ((yaml-mode yaml-ts-mode) .
