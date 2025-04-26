@@ -1,0 +1,24 @@
+---
+checker: flymake-collection-bashate
+tests:
+  - name: no-lints
+    file: |
+      #!/usr/bin/bash
+      echo Hello
+    lints: []
+  - name: no-shebang
+    file: |
+      echo Hello
+    lints:
+      - point: [1, 0]
+        level: warning
+        message: "File does not begin with #! or have .sh prefix (bashate)"
+  - name: syntax-error
+    file: |
+      #!/usr/bin/bash
+
+      if
+    lints:
+      - point: [3, 0]
+        level: error
+        message: "Syntax error: syntax error: unexpected end of file (bashate)"
