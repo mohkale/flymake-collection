@@ -108,7 +108,7 @@ have a flymake backend available.
          (flymake-collection-pycodestyle :disabled t) ; Never added.
          (flymake-collection-pylint                   ; Added when predicate is true.
           :predicate (lambda ()
-                       (executable-find "pylint"))))))
+                       (executable-find "pylint")))))
     #+end_src
 
 **** Automatically Enabling Syntax Checkers
@@ -124,7 +124,7 @@ have a flymake backend available.
      ~flymake-collection-config~ using the ~flymake-collection-change-checker~ command.
 
 * Contributing
-  Please do!. There are more checkers out there than I have the time to explore, if
+  Please do! There are more checkers out there than I have the time to explore, if
   you'd like to add support for a new checker or contribute improvements to an
   existing one, we'd be more than happy to accept.
 
