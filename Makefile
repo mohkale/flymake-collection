@@ -45,19 +45,27 @@ $(BIN_DIR)/%.elc: $(SRC_DIR)/%.el
 .PHONY: docker-build
 docker-build: ## Create a build image for running tests
 	@echo "[docker] Building docker image"
-	docker build -t flymake-collection-test ./tests/checkers
+	docker build -t flymake-collection-test --progress plain ./tests/checkers
 
-DOCKER_COMMAND := bash
 DOCKER_FLAGS := -it
-.PHONY: docker
-docker: docker-build ## Run a command in the built docker-image.
+define docker_run
 	docker run \
 	  --rm \
 	  $(DOCKER_FLAGS) \
       --workdir /workspaces/flymake-collection \
 	  --volume "$$(pwd)":/workspaces/flymake-collection:ro \
 	  flymake-collection-test \
-	  $(DOCKER_COMMAND)
+	  $1 $2 $3 $4 $5 $6 $7 $8 $9
+endef
+
+DOCKER_RUN := bash
+.PHONY: docker
+docker: docker-build ## Run a command in the built docker-image.
+	$(call docker_run,$(DOCKER_RUN))
+
+.PHONY: docker-test
+docker-test: ## Run tests from within the docker image
+	$(call docker_run,make,test)
 
 LINTERS := *
 .PHONY: test
