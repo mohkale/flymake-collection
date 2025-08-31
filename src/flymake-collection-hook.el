@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(eval-when-compile (require 'subr-x))
 
 (define-obsolete-variable-alias 'flymake-rest-config 'flymake-collection-config "2.0.0")
 (define-obsolete-variable-alias 'flymake-rest-config-inherit 'flymake-collection-config-inherit "2.0.0")
@@ -179,11 +180,25 @@ that are not true."
 
     checkers))
 
+(defun flymake-collection-hook--deduplicate-configs (configs)
+  "Deduplicate checker-configs from CONFIGS by checker-name.
+Keeps the first configuration entry for each duplicated checker."
+  (let ((checker-hash (make-hash-table)))
+    (cl-loop
+     for config in configs
+     with key = nil do (setq key (plist-get config :checker))
+     unless (gethash key checker-hash)
+       do (puthash key t checker-hash)
+       and collect config)))
+
 (defun flymake-collection-hook--checker-configs (mode)
   "Fetch the list of diagnostic functions for MODE as plists.
 The plists contains keys for :checker, :depth, :disabled."
-  (flymake-collection-hook--expand-configs
-   (flymake-collection-hook--checkers mode)))
+  (thread-first
+    mode
+    (flymake-collection-hook--checkers)
+    (flymake-collection-hook--expand-configs)
+    (flymake-collection-hook--deduplicate-configs)))
 
 
 
