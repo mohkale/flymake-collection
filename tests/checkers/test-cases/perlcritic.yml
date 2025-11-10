@@ -1,0 +1,25 @@
+---
+checker: flymake-collection-perlcritic
+tests:
+  - name: no-lints
+    file: |
+      #!/bin/env perl
+      # A test case that returns no warnings
+
+      use warnings;
+      use strict;      
+      print 'hello world\n';
+    lints: []
+  - name: notes
+    file: |
+      #!/bin/env perl
+      # A test case with a warning lint
+
+      print 'hello world\n';
+    lints:
+      - point: [4, 0]
+        level: note
+        message: Code before warnings are enabled (perlcritic)
+      - point: [4, 0]
+        level: note
+        message: Code before strictures are enabled (perlcritic)
