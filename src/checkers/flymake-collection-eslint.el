@@ -32,13 +32,18 @@
 (eval-when-compile
   (require 'flymake-collection-define))
 
+(defcustom flymake-collection-eslint-executable "eslint"
+  "The path or the command name of eslint."
+  :type 'string
+  :group 'flymake-collection)
+
 ;;;###autoload (autoload 'flymake-collection-eslint "flymake-collection-eslint")
 (flymake-collection-define-enumerate flymake-collection-eslint
   "A Javascript syntax and style checker using eslint.
 
 See URL `https://eslint.org/'."
   :title "eslint"
-  :pre-let ((eslint-exec (executable-find "eslint")))
+  :pre-let ((eslint-exec (executable-find flymake-collection-eslint-executable)))
   :pre-check (unless eslint-exec
                (error "Cannot find eslint executable"))
   :write-type 'pipe
