@@ -97,6 +97,8 @@
       (flymake-collection-bashate :disabled t)
       (flymake-collection-codespell :disabled t)
       (sh-shellcheck-flymake :disabled t)))
+    (dotenv-mode
+     flymake-collection-dotenv-linter)
     ((yaml-mode yaml-ts-mode) .
      (flymake-collection-yamllint
       (flymake-collection-codespell :disabled t)
