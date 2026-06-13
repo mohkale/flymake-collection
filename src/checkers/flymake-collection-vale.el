@@ -73,9 +73,9 @@ See https://vale.sh/."
                (error "Cannot find vale executable"))
   :write-type 'pipe
   :command `(,vale-exec
-             ,@(when-let ((file-extension
-                           (funcall flymake-collection-vale-extension-function flymake-collection-source)))
-                 (concat "--ext=." file-extension))
+             ,(when-let ((file-extension
+                          (funcall flymake-collection-vale-extension-function flymake-collection-source)))
+                (concat "--ext=." file-extension))
              "--output=JSON")
   :generator
   (cdaar
